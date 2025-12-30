@@ -1,0 +1,42 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-movies-table
+      author: Aslanli
+      changes:
+        - createTable:
+            tableName: movies
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: TEXT
+              - column:
+                  name: release_date
+                  type: DATE
+              - column:
+                  name: duration
+                  type: INT
+              - column:
+                  name: cover_image_url
+                  type: VARCHAR(255)
+              - column:
+                  name: average_rating
+                  type: DECIMAL(3,2)
+                  defaultValueNumeric: 0
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP

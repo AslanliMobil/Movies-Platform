@@ -1,0 +1,43 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-wishlists-table
+      author: Aslanli
+      changes:
+        - createTable:
+            tableName: wishlists
+            columns:
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: movie_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+        - addPrimaryKey:
+            tableName: wishlists
+            columnNames: user_id, movie_id
+
+        - addForeignKeyConstraint:
+            constraintName: fk_wishlists_user
+            baseTableName: wishlists
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            constraintName: fk_wishlists_movie
+            baseTableName: wishlists
+            baseColumnNames: movie_id
+            referencedTableName: movies
+            referencedColumnNames: id
+

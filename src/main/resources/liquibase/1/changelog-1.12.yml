@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20251219-create-user-roles-table
+      author: Aslanli
+      preConditions:
+        - onFail: MARK_RAN
+          not:
+            tableExists:
+              tableName: user_roles
+      changes:
+        - createTable:
+            tableName: user_roles
+            columns:
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role_id
+                  type: INT
+                  constraints:
+                    nullable: false
+
+        # Primary Key (user_id və role_id cütlüyü unikal olmalıdır)
+        - addPrimaryKey:
+            tableName: user_roles
+            columnNames: user_id, role_id
+            constraintName: pk_user_roles
+
+        # Users cədvəlinə əlaqə
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: user_id
+            constraintName: fk_user_roles_user
+            referencedTableName: users
+            referencedColumnNames: id
+            onDelete: CASCADE
+
+        # Roles cədvəlinə əlaqə
+        - addForeignKeyConstraint:
+            baseTableName: user_roles
+            baseColumnNames: role_id
+            constraintName: fk_user_roles_role
+            referencedTableName: roles
+            referencedColumnNames: id
+            onDelete: CASCADE

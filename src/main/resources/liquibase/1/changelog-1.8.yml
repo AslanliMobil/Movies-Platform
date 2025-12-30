@@ -1,0 +1,58 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-reviews-table
+      author: Aslanli
+      changes:
+        - createTable:
+            tableName: reviews
+            columns:
+              - column:
+                  name: id
+                  type: INT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: movie_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rating
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: comment
+                  type: TEXT
+              - column:
+                  name: created_at
+                  type: TIMESTAMP
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP
+
+        - addUniqueConstraint:
+            tableName: reviews
+            columnNames: user_id, movie_id
+
+        - addForeignKeyConstraint:
+            constraintName: fk_reviews_user
+            baseTableName: reviews
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+
+        - addForeignKeyConstraint:
+            constraintName: fk_reviews_movie
+            baseTableName: reviews
+            baseColumnNames: movie_id
+            referencedTableName: movies
+            referencedColumnNames: id
+

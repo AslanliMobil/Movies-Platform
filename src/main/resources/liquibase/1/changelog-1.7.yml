@@ -1,0 +1,37 @@
+databaseChangeLog:
+- changeSet:
+    id: create-movie-directors-table
+    author: Aslanli
+    changes:
+      - createTable:
+          tableName: movie_directors
+          columns:
+            - column:
+                name: movie_id
+                type: INT
+                constraints:
+                  nullable: false
+            - column:
+                name: director_id
+                type: INT
+                constraints:
+                  nullable: false
+
+      - addPrimaryKey:
+          tableName: movie_directors
+          columnNames: movie_id, director_id
+
+      - addForeignKeyConstraint:
+          constraintName: fk_movie_directors_movie
+          baseTableName: movie_directors
+          baseColumnNames: movie_id
+          referencedTableName: movies
+          referencedColumnNames: id
+
+      - addForeignKeyConstraint:
+          constraintName: fk_movie_directors_director
+          baseTableName: movie_directors
+          baseColumnNames: director_id
+          referencedTableName: directors
+          referencedColumnNames: id
+
