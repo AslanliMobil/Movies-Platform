@@ -1,53 +1,56 @@
 package org.example.moviesplatform.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.UserDTO;
-import org.example.moviesplatform.entity.User;
+import org.example.moviesplatform.dto.UserUpdateDTO;
+import org.example.moviesplatform.model.UserFilter;
 import org.example.moviesplatform.service.UserService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Tag(name = "User Management", description = "İstifadəçi əməliyyatları")
 public class UserController {
 
     private final UserService userService;
-    private final org.example.moviesplatform.mapper.UserMapper userMapper; // Bu əlavə olundu
 
     @GetMapping
-    public List<UserDTO> getAllUsers() {
-        return userService.getAllUsers();
-    }
-
-    @GetMapping("/username/{username}")
-    public ResponseEntity<UserDTO> getByUsername(@PathVariable String username) {
-        User user = userService.getByUsername(username);
-        return ResponseEntity.ok(userMapper.toUserDTO(user));
-    }
-
-    @GetMapping("/surname/{surname}")
-    public ResponseEntity<UserDTO> getBySurname(@PathVariable String surname) {
-        User user = userService.getBySurname(surname);
-        return ResponseEntity.ok(userMapper.toUserDTO(user)); // Artıq DTO qaytarır
+    @Operation(summary = "Filtrlə və səhifələmə ilə istifadəçiləri gətir")
+    public ResponseEntity<Page<UserDTO>> getAllUsers(UserFilter filter, Pageable pageable) {
+        log.info("Siyahı sorğusu: filtr={}, page={}", filter, pageable.getPageNumber());
+        return ResponseEntity.ok(userService.getAllUsers(filter, pageable));
     }
 
     @PostMapping
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO dto) {
-        UserDTO created = userService.createUser(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(created);
+    @Operation(summary = "Yeni istifadəçi qeydiyyatı")
+    public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO dto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(dto));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @RequestBody UserDTO dto) {
+    @PatchMapping("/{id}") // Partial update üçün PATCH daha uyğundur
+    @Operation(summary = "Məlumatları qismən yenilə")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @Valid @RequestBody UserUpdateDTO dto) {
+        log.info("Yenilənmə: id={}", id);
         return ResponseEntity.ok(userService.updateUserPartial(id, dto));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Integer id) {
+    @Operation(summary = "İstifadəçini sil (Soft-delete)")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok().build();
     }
 }

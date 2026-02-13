@@ -1,61 +1,60 @@
 package org.example.moviesplatform.specification;
 
-import org.example.moviesplatform.model.UserFilter;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
+// 1. DÜZƏLİŞ: Köhnə User yerinə UserEntity import edildi
+import org.example.moviesplatform.security.repository.entity.UserEntity;
+import org.example.moviesplatform.model.UserFilter;
 import org.springframework.data.jpa.domain.Specification;
-import org.example.moviesplatform.entity.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class UserSpecification implements Specification<User> {
-    private final UserFilter filter;
+public class UserSpecification {
 
-    public UserSpecification(UserFilter filter) {
-        this.filter = filter;
-    }
+    // 2. DÜZƏLİŞ: Specification<User> -> Specification<UserEntity> edildi
+    public static Specification<UserEntity> getSpecification(UserFilter filter) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-    @Override
-    public Predicate toPredicate(Root<User> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        List<Predicate> predicates = new ArrayList<>();
+            if (filter == null) return cb.conjunction();
 
-        // Username filter - null/boş dəyərlər nəzərə alınmır
-        if (filter.getUsername() != null && !filter.getUsername().trim().isEmpty()) {
-            predicates.add(cb.like(cb.lower(root.get("username")),
-                    "%" + filter.getUsername().toLowerCase().trim() + "%"));
-        }
+            // 1. Username
+            if (filter.getUsername() != null && !filter.getUsername().isBlank()) {
+                predicates.add(cb.like(
+                        cb.lower(root.get("username").as(String.class)),
+                        "%" + filter.getUsername().toLowerCase().trim() + "%"
+                ));
+            }
 
-        // Email filter - null/boş dəyərlər nəzərə alınmır
-        if (filter.getEmail() != null && !filter.getEmail().trim().isEmpty()) {
-            predicates.add(cb.like(cb.lower(root.get("email")),
-                    "%" + filter.getEmail().toLowerCase().trim() + "%"));
-        }
+            // 2. Email
+            if (filter.getEmail() != null && !filter.getEmail().isBlank()) {
+                predicates.add(cb.like(
+                        cb.lower(root.get("email").as(String.class)),
+                        "%" + filter.getEmail().toLowerCase().trim() + "%"
+                ));
+            }
 
-        // First name filter - null/boş dəyərlər nəzərə alınmır
-        if (filter.getFirstName() != null && !filter.getFirstName().trim().isEmpty()) {
-            predicates.add(cb.like(cb.lower(root.get("firstName")),
-                    "%" + filter.getFirstName().toLowerCase().trim() + "%"));
-        }
+            // 3. Tarix Aralığı
+            if (filter.getCreatedAtFrom() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), filter.getCreatedAtFrom()));
+            }
 
-        // Last name filter - null/boş dəyərlər nəzərə alınmır
-        if (filter.getLastName() != null && !filter.getLastName().trim().isEmpty()) {
-            predicates.add(cb.like(cb.lower(root.get("lastName")),
-                    "%" + filter.getLastName().toLowerCase().trim() + "%"));
-        }
+            if (filter.getCreatedAtTo() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), filter.getCreatedAtTo()));
+            }
 
-        if (filter.getCreatedAtFrom() != null) {
-            predicates.add(cb.greaterThanOrEqualTo(root.get("createdAt"), filter.getCreatedAtFrom().toLocalDate()));
-        }
+            // 4. Soft Delete (isDeleted sahəsinin UserEntity-də olduğundan əmin ol)
+            if (filter.getIncludeDeleted() != null && !filter.getIncludeDeleted()) {
+                // Əgər UserEntity-də bu sahə yoxdursa, bu hissəni kommentə al
+                predicates.add(cb.equal(root.get("isDeleted"), false));
+            }
 
-        if (filter.getCreatedAtTo() != null) {
-            predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), filter.getCreatedAtTo().toLocalDate()));
-        }
+            // 5. Sıralama
+            if (query.getResultType() != Long.class && query.getResultType() != long.class) {
+                query.orderBy(cb.desc(root.get("createdAt")));
+            }
 
-        // Əgər heç bir filtr yoxdursa, bütün userləri qaytar
-        return predicates.isEmpty()
-                ? cb.conjunction()
-                : cb.and(predicates.toArray(new Predicate[0]));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 }

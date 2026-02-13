@@ -1,0 +1,27 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-video-url-to-movies-v1
+      author: Aslanli
+      changes:
+        # 1. 'video_url' sahəsinin əlavə edilməsi
+        # Transcoding bitdikdən sonra HLS index (.m3u8) linkini burada saxlayacağıq.
+        - addColumn:
+            tableName: movies
+            columns:
+              - column:
+                  name: video_url
+                  type: VARCHAR(500)
+                  remarks: "HLS (.m3u8) formatında videonun MinIO və ya CDN linki"
+
+        # 2. Movie emalı üçün əlavə indeks (Opsional)
+        # Əgər gələcəkdə video_url-ə görə axtarış etmək istəsən performans üçün.
+        - createIndex:
+            indexName: idx_movies_video_url
+            tableName: movies
+            columns:
+              - column:
+                  name: video_url
+
+        # 3. Məlumatın bütövlüyü üçün yoxlama
+        # Yeni əlavə edilən filmlər üçün bu sahənin yaradılma tarixinə əsasən
+        # düzgün idarə olunmasını təmin edən qeydlər.

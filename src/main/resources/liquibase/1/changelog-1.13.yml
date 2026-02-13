@@ -1,0 +1,17 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-directors-table-v2
+      author: Aslanli
+      changes:
+        - addColumn:
+            tableName: directors
+            columns:
+              - column:
+                  name: biography
+                  type: TEXT
+              - column:
+                  name: birth_date
+                  type: DATE
+        - dropColumn:
+            tableName: directors
+            columnName: birth_year

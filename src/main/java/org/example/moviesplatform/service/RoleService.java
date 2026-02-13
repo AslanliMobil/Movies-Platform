@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.entity.Role;
 import org.example.moviesplatform.error.model.RoleNotFoundException;
+import org.example.moviesplatform.model.RoleFilter; // Filteri import etdik
 import org.example.moviesplatform.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.example.moviesplatform.specification.RoleSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -20,84 +21,82 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleService {
 
-    @Value("${application.whitelist.role:1}")
-    public Long whitelistRoleId;
-
     private final RoleRepository roleRepository;
 
-    // ---------- GET ALL ----------
+    // ---------- GET ALL (List) ----------
+    @Transactional(readOnly = true)
     public List<Role> getAllRoles() {
-        log.debug("Getting all roles");
+        log.debug("Bütün rollar siyahı şəklində gətirilir");
         return roleRepository.findAll();
     }
 
-    // ---------- PAGINATION SUPPORT ----------
-    public Page<Role> getAllRoles(Pageable pageable) {
-        log.debug("Getting paginated roles, pageable={}", pageable);
-        return roleRepository.findAll(pageable);
-    }
-
     // ---------- GET BY ID ----------
+    @Transactional(readOnly = true)
     public Role getRoleById(Integer id) {
         return roleRepository.findById(id)
-                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+                .orElseThrow(() -> new RoleNotFoundException("Role id=" + id + " tapılmadı"));
     }
 
     // ---------- GET BY NAME ----------
+    @Transactional(readOnly = true)
     public Role getByName(String name) {
         return roleRepository.findByName(name)
-                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+                .orElseThrow(() -> new RoleNotFoundException("Rol adı tapılmadı: " + name));
+    }
+
+    // ---------- GET ALL (Paginated & Filtered) ----------
+    @Transactional(readOnly = true)
+    public Page<Role> getAllRoles(RoleFilter filter, Pageable pageable) {
+        log.debug("Rollar filtrlənir: {}, səhifə: {}", filter, pageable);
+
+        // BURANI DƏYİŞDİK: Specification yaradırıq
+        RoleSpecification spec = new RoleSpecification(filter);
+
+        // Repository-də olan standart findAll(Specification, Pageable) metodunu çağırırıq
+        return roleRepository.findAll(spec, pageable);
     }
 
     // ---------- CREATE ----------
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Transactional(propagation = Propagation.REQUIRED)
     public Role addRole(Role role) {
+        // Dublikat yoxlaması: Eyni adda rol bazada olmamalıdır
+        if (roleRepository.existsByName(role.getName())) {
+            throw new RuntimeException("Bu adda rol artıq mövcuddur: " + role.getName());
+        }
+
         Role saved = roleRepository.save(role);
-        log.info("Added role: {}", saved);
+        log.info("Yeni rol yaradıldı: {}", saved.getName());
         return saved;
     }
 
-    // ---------- PARTIAL UPDATE ----------
-    @Transactional(isolation = Isolation.SERIALIZABLE)
+    // ---------- PARTIAL UPDATE (PATCH) ----------
+    @Transactional(isolation = Isolation.READ_COMMITTED)
     public Role update(Integer roleId, Role rolePayload) {
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+        Role role = getRoleById(roleId);
 
-        // null-checks: yalnız gələn dəyərləri set edirik
         if (rolePayload.getName() != null) {
+            // Əgər ad dəyişirsə, yeni adın başqasında olub-olmadığını yoxlamaq olar
             role.setName(rolePayload.getName());
         }
         if (rolePayload.getDescription() != null) {
             role.setDescription(rolePayload.getDescription());
         }
 
-        Role saved = roleRepository.save(role);
-        log.info("Updated role id={} -> {}", roleId, saved);
-        return saved;
-    }
-
-    // ---------- FULL UPDATE (PUT) ----------
-    @Transactional
-    public Role updateRoleFully(Integer id, Role newRole) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
-
-        // Tam yeniləmə: bütün sahələri dəyişdiririk
-        role.setName(newRole.getName());
-        role.setDescription(newRole.getDescription());
-        // createdAt / updatedAt sahələrini əgər lazımdırsa burada idarə et
-
-        Role saved = roleRepository.save(role);
-        log.info("Fully updated role id={} -> {}", id, saved);
-        return saved;
+        log.info("Rol qismən yeniləndi: id={}", roleId);
+        return roleRepository.save(role);
     }
 
     // ---------- DELETE ----------
     @Transactional
     public void delete(Integer id) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new RoleNotFoundException("Role not found"));
+        Role role = getRoleById(id);
+
+        // Kritik xəbərdarlıq: Əgər bu rola bağlı user-lər varsa, silinməyə icazə verməmək olar
+        if (role.getUserEntities() != null && !role.getUserEntities().isEmpty()) {
+            throw new RuntimeException("Bu rola bağlı istifadəçilər var, silmək mümkün deyil!");
+        }
+
         roleRepository.delete(role);
-        log.info("Deleted role id={}", id);
+        log.info("Rol silindi: id={}", id);
     }
 }

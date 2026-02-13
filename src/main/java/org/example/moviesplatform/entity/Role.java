@@ -2,32 +2,42 @@ package org.example.moviesplatform.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
+import org.example.moviesplatform.security.repository.entity.UserEntity;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "roles")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role {
+
     @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column
+    @Column(name = "name", nullable = false, unique = true, columnDefinition = "text")
     private String name;
 
-    @Column
+    @Column(name = "description", columnDefinition = "text")
     private String description;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT now()")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(columnDefinition = "TIMESTAMP DEFAULT now()")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     @JsonIgnore
-    private List<User> users;
+    private List<UserEntity> userEntities;
 }

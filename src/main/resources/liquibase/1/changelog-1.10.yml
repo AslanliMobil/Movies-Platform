@@ -1,55 +1,47 @@
 databaseChangeLog:
-- changeSet:
-    id: create-watch-history-table
-    author: Aslanli
-    changes:
-      - createTable:
-          tableName: watch_history
-          columns:
-            - column:
-                name: id
-                type: INT
-                autoIncrement: true
-                constraints:
-                  primaryKey: true
-                  nullable: false
-            - column:
-                name: user_id
-                type: INT
-                constraints:
-                  nullable: false
-            - column:
-                name: movie_id
-                type: INT
-                constraints:
-                  nullable: false
-            - column:
-                name: stopped_at
-                type: INT
-                defaultValueNumeric: 0
-            - column:
-                name: is_finished
-                type: BOOLEAN
-                defaultValueBoolean: false
-            - column:
-                name: last_watched_at
-                type: TIMESTAMP
+  - changeSet:
+      id: create-watch-history-table
+      author: Aslanli
+      changes:
+        - createTable:
+            tableName: watch_history
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_watch_history_user
+                    referencedTableName: users
+                    referencedColumnNames: id
+              - column:
+                  name: movie_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_watch_history_movie
+                    referencedTableName: movies
+                    referencedColumnNames: id
+              - column:
+                  name: stopped_at
+                  type: BIGINT
+                  defaultValueNumeric: 0
+              - column:
+                  name: is_finished
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+              - column:
+                  name: last_watched_at
+                  type: TIMESTAMP
 
-      - addUniqueConstraint:
-          tableName: watch_history
-          columnNames: user_id, movie_id
-
-      - addForeignKeyConstraint:
-          constraintName: fk_watch_history_user
-          baseTableName: watch_history
-          baseColumnNames: user_id
-          referencedTableName: users
-          referencedColumnNames: id
-
-      - addForeignKeyConstraint:
-          constraintName: fk_watch_history_movie
-          baseTableName: watch_history
-          baseColumnNames: movie_id
-          referencedTableName: movies
-          referencedColumnNames: id
-
+        - addUniqueConstraint:
+            tableName: watch_history
+            columnNames: user_id, movie_id
+            constraintName: uk_user_movie_watch

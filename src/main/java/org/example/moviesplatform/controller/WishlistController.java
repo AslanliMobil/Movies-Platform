@@ -5,32 +5,31 @@ import org.example.moviesplatform.dto.WishlistDTO;
 import org.example.moviesplatform.service.WishlistService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/wishlists")
+@RequestMapping("/api/wishlists")
 @RequiredArgsConstructor
 public class WishlistController {
 
     private final WishlistService wishlistService;
 
-    // Müəyyən bir istifadəçinin bütün istək siyahısı
-    // GET /wishlists/user/1
     @GetMapping("/user/{userId}")
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')") // Təhlükəsizlik: Yalnız öz siyahısına baxa bilər
     public ResponseEntity<List<WishlistDTO>> getUserWishlist(@PathVariable Integer userId) {
         return ResponseEntity.ok(wishlistService.getWishlistByUserId(userId));
     }
 
-    // Siyahıya film əlavə etmək
     @PostMapping
     public ResponseEntity<WishlistDTO> addToWishlist(@RequestBody WishlistDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(wishlistService.add(dto));
     }
 
-    // Siyahıdan film silmək
     @DeleteMapping("/user/{userId}/movie/{movieId}")
+    @PreAuthorize("#userId == authentication.principal.id or hasRole('ADMIN')")
     public ResponseEntity<Void> removeFromWishlist(@PathVariable Integer userId, @PathVariable Integer movieId) {
         wishlistService.remove(userId, movieId);
         return ResponseEntity.noContent().build();

@@ -1,36 +1,41 @@
 package org.example.moviesplatform.model;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "İstifadəçi axtarışı üçün filtr parametrləri")
 public class UserFilter {
 
-    @Size(max = 50, message = "Username must be maximum 50 characters")
+    @Schema(description = "İstifadəçi adı (qismən axtarış dəstəklənir)", example = "admin")
     private String username;
 
-    @Email(message = "Please enter a valid email address")
+    @Schema(description = "Email ünvanı (qismən axtarış dəstəklənir)", example = "example@com")
     private String email;
 
-    @Size(max = 50, message = "First name must be maximum 50 characters")
+    @Schema(description = "Ad", example = "Elvin")
     private String firstName;
 
-    @Size(max = 50, message = "Last name must be maximum 50 characters")
+    @Schema(description = "Soyad", example = "Məmmədov")
     private String lastName;
 
+    @Schema(description = "Axtarış üçün başlanğıc tarixi (ISO format: yyyy-MM-dd'T'HH:mm:ss)")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createdAtFrom;
 
+    @Schema(description = "Axtarış üçün son tarix")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime createdAtTo;
+
+    @Schema(description = "Silinmiş istifadəçiləri də daxil etmək üçün (default: false)", example = "false")
+    private Boolean includeDeleted = false; // Real layihədə adminlər silinənləri də görmək istəyə bilər
 }
