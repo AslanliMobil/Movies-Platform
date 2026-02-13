@@ -1,9 +1,6 @@
 package org.example.moviesplatform.specification;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 import org.example.moviesplatform.entity.Actor;
 import org.example.moviesplatform.model.ActorFilter;
 import org.springframework.data.jpa.domain.Specification;
@@ -11,29 +8,45 @@ import org.springframework.data.jpa.domain.Specification;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ActorSpecification implements Specification<Actor> {
-    private final ActorFilter filter;
+/**
+ * Bu klass aktyorlar üzərində mürəkkəb axtarış sorğularını (SQL) dinamik şəkildə qurur.
+ */
+public class ActorSpecification {
 
-    public ActorSpecification(ActorFilter filter) {
-        this.filter = filter;
-    }
+    public static Specification<Actor> getSpecification(ActorFilter filter) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-    @Override
-    public Predicate toPredicate(Root<Actor> root, CriteriaQuery<?> query, CriteriaBuilder cb) {
-        List<Predicate> predicates = new ArrayList<>();
+            // 1. Ad üzrə axtarış (Tom -> tom, TOM fərqi qoymadan)
+            if (filter.getName() != null && !filter.getName().isBlank()) {
+                predicates.add(cb.like(cb.lower(root.get("name")),
+                        "%" + filter.getName().toLowerCase() + "%"));
+            }
 
-        if (filter.getName() != null && !filter.getName().isBlank()) {
-            predicates.add(cb.like(cb.lower(root.get("name")), "%" + filter.getName().toLowerCase() + "%"));
-        }
+            // 2. Bioqrafiya daxilində söz axtarışı
+            if (filter.getBiography() != null && !filter.getBiography().isBlank()) {
+                predicates.add(cb.like(cb.lower(root.get("biography")),
+                        "%" + filter.getBiography().toLowerCase() + "%"));
+            }
 
-        if (filter.getBirthYearFrom() != null) {
-            predicates.add(cb.greaterThanOrEqualTo(root.get("birthYear"), filter.getBirthYearFrom()));
-        }
+            // 3. Doğum tarixi aralığı (Məsələn: 1980-ci ildən sonra doğulanlar)
+            if (filter.getBirthDateFrom() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("birthDate"), filter.getBirthDateFrom()));
+            }
+            if (filter.getBirthDateTo() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("birthDate"), filter.getBirthDateTo()));
+            }
 
-        if (filter.getBirthYearTo() != null) {
-            predicates.add(cb.lessThanOrEqualTo(root.get("birthYear"), filter.getBirthYearTo()));
-        }
+            // 4. Ölüm tarixi aralığı
+            if (filter.getDeathDateFrom() != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("deathDate"), filter.getDeathDateFrom()));
+            }
+            if (filter.getDeathDateTo() != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("deathDate"), filter.getDeathDateTo()));
+            }
 
-        return cb.and(predicates.toArray(new Predicate[0]));
+            // Bütün şərtləri "AND" (VƏ) məntiqi ilə birləşdirir
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
     }
 }

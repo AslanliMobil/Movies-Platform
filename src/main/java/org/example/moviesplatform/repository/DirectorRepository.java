@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface DirectorRepository extends JpaRepository<Director, Integer>, JpaSpecificationExecutor<Director> {
-    List<Director> findByNameContainingIgnoreCase(String name);
+    boolean existsByNameIgnoreCase(String name);
 }

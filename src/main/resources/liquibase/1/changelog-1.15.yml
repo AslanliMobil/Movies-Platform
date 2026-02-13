@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-unique-constraint-director-name
+      author: Aslanli
+      changes:
+        - addUniqueConstraint:
+            tableName: directors
+            columnNames: name
+            constraintName: uk_director_name

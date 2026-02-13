@@ -1,19 +1,11 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.5.6'
-    id 'io.spring.dependency-management' version '1.1.7'
-    id 'org.liquibase.gradle' version '2.2.2'
+    id 'org.springframework.boot' version '3.2.3'
+    // Dependency management pluginini sildik, çünki xəta yaradır
 }
 
-ext {
-    mapstructVersion = "1.5.5.Final"
-}
 group = 'org.example'
 version = '0.0.1-SNAPSHOT'
-description = 'MoviesPlatform'
-
-version = '0.0.1-SNAPSHOT'
-description = 'coffeeshop'
 
 java {
     toolchain {
@@ -21,54 +13,53 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-}
-
 repositories {
     mavenCentral()
 }
+
 dependencies {
-    // spring
+    // 1. Spring Boot BOM (Bütün Spring asılılıqlarının versiyasını avtomatik idarə edir)
+    implementation platform('org.springframework.boot:spring-boot-dependencies:3.2.3')
+
+    // 2. Starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
-    // db
-    implementation 'org.liquibase:liquibase-core:4.24.0'
+    // 3. Database
+    implementation 'org.liquibase:liquibase-core'
     runtimeOnly 'org.postgresql:postgresql'
 
-    // documentation
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0")
-    implementation 'org.springframework.security:spring-security-crypto'
+    // 4. MinIO (HLS üçün)
+    implementation 'io.minio:minio:8.5.7'
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
-    // --- LOMBOK & MAPSTRUCT FIX ---
+    // 5. JWT
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-    // 1. Lombok compile-only (Kodu yazmaq üçün)
-    compileOnly 'org.projectlombok:lombok'
+    // 6. Swagger/OpenAPI
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 
-    // 2. MapStruct kitabxanası
-    implementation "org.mapstruct:mapstruct:${mapstructVersion}"
-
-    // 3. ANNOTATION PROCESSOR ARDICILLIĞI (ÇOX VACİBDİR)
-
-    // A. Əvvəlcə Lombok processor işləməlidir (Getter/Setter yaratmaq üçün)
-    annotationProcessor 'org.projectlombok:lombok'
-
-    // B. Lombok və MapStruct arasındakı əlaqə (Binding)
+    // 7. Lombok & MapStruct
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     annotationProcessor 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
-    // C. Sonda MapStruct processor işləməlidir (Hazır metodları görmək üçün)
-    annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+    // 8. Utils
+    implementation 'com.google.guava:guava:33.0.0-jre'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
-    // testing
+    // 9. Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'org.springframework.security:spring-security-test'
 }
-
 
 tasks.named('test') {
     useJUnitPlatform()

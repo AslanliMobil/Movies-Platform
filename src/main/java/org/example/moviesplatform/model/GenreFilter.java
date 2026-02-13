@@ -1,10 +1,12 @@
 package org.example.moviesplatform.model;
 
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -12,9 +14,17 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GenreFilter {
 
-    @Size(max = 30, message = "Genre name search must be maximum 30 characters")
+    // Janrın adına görə axtarış (Məs: "Act" yazanda Action tapılsın)
     private String name;
 
-    // Bu janrda ən azı neçə film olmasını süzmək üçün (məsələn: boş janrları göstərmə)
+    // Yaradılma tarixinə görə filtr (Hansı tarixdən sonra yaradılıb?)
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime createdAtFrom;
+
+    // Hansı tarixdən əvvəl yaradılıb?
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+    private LocalDateTime createdAtTo;
+
+    // Bu janrda ən azı neçə film olmasını süzmək üçün
     private Integer minMovieCount;
 }

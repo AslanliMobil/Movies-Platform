@@ -21,7 +21,6 @@ databaseChangeLog:
               - column:
                   name: birth_year
                   type: INT
-
               - column:
                   name: created_at
                   type: TIMESTAMP

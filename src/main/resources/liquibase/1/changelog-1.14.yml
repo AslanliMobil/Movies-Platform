@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-death-date-to-directors
+      author: Aslanli
+      changes:
+        - addColumn:
+            tableName: directors
+            columns:
+              - column:
+                  name: death_date
+                  type: DATE

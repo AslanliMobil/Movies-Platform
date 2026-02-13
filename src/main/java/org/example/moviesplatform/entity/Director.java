@@ -3,6 +3,7 @@ package org.example.moviesplatform.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,11 +18,17 @@ public class Director {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "birth_year")
-    private Integer birthYear;
+    @Column(columnDefinition = "TEXT") // Mətnin uzunluğuna limit qoymur
+    private String biography;
 
-    // Əlaqənin sahibi Movie entity-sidir (mappedBy istifadə olunur)
-    @ManyToMany(mappedBy = "directors", fetch = FetchType.LAZY)
+    @Column(name = "birth_date")
+    private LocalDate birthDate;
+
+    @Column(name = "death_date")
+    private LocalDate deathDate;
+
+    // ManyToMany-ni silib OneToMany yazırıq
+    @OneToMany(mappedBy = "director", fetch = FetchType.LAZY)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Movie> movies;
 

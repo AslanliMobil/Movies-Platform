@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: 20260128-add-is-deleted
+      author: Aslanli
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: is_deleted
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

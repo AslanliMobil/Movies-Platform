@@ -1,11 +1,12 @@
 package org.example.moviesplatform.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "actors")
@@ -15,16 +16,19 @@ public class Actor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
-    @Column(name = "birth_year")
-    private Integer birthYear;
+    @Column(columnDefinition = "TEXT")
+    private String biography;
 
-    @ManyToMany(mappedBy = "actors")
-    @JsonIgnore
-    private List<Movie> movies;
+    private LocalDate birthDate;
+    private LocalDate deathDate;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(updatable = false)
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HLS Video Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+<h1>🎬 MoviesPlatform HLS Player</h1>
+<video id="video" controls width="800"></video>
+
+<script>
+    var video = document.getElementById('video');
+    // Movie ID 1 olan master playlist-in yolu
+    var videoSrc = 'http://localhost:8081/api/v1/videos/stream/1/master.m3u8';
+
+    if (Hls.isSupported()) {
+        var hls = new Hls();
+        hls.loadSource(videoSrc);
+        hls.attachMedia(video);
+    } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+        video.src = videoSrc;
+    }
+</script>
+</body>
+</html>

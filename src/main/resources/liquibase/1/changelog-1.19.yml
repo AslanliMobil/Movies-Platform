@@ -1,0 +1,35 @@
+databaseChangeLog:
+  - changeSet:
+      id: update-wishlists-table-v2
+      author: Aslanli
+      changes:
+        # 1. 'note' sahəsinin əlavə edilməsi (İstifadəçinin xüsusi qeydləri üçün)
+        - addColumn:
+            tableName: wishlists
+            columns:
+              - column:
+                  name: note
+                  type: VARCHAR(500)
+                  remarks: "İstifadəçinin film haqqında xüsusi qeydi"
+
+        # 2. created_at üçün default dəyər (Baza səviyyəsində avtomatik tarix qoyulması)
+        - addDefaultValue:
+            tableName: wishlists
+            columnName: created_at
+            defaultValueComputed: CURRENT_TIMESTAMP
+
+        # 3. İndeks əlavə edilməsi (Performans üçün)
+        # Qeyd: user_id artıq PK tərkibində olduğu üçün indekslidir.
+        # Amma müəyyən bir filmi kimlərin siyahıya əlavə etdiyini sürətli tapmaq üçün movie_id-yə indeks lazımdır.
+        - createIndex:
+            indexName: idx_wishlists_movie_id
+            tableName: wishlists
+            columns:
+              - column:
+                  name: movie_id
+
+        # 4. Məhdudiyyət: created_at sahəsini nullable: false edirik
+        - addNotNullConstraint:
+            tableName: wishlists
+            columnName: created_at
+            columnDataType: TIMESTAMP
