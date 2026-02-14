@@ -17,8 +17,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/movies")
+@RequestMapping("/api/v1/movies") // Bura "v1" əlavə etdik ki, React-lə eyni olsun
 @RequiredArgsConstructor
 @Tag(name = "Movie Controller", description = "Filmlərin idarə edilməsi və HLS Video Upload")
 public class MovieController {
