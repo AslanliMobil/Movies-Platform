@@ -2,10 +2,10 @@ package org.example.moviesplatform.security.model;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.moviesplatform.Validation.ValidPassword;
 
 @Data
 @AllArgsConstructor
@@ -15,8 +15,8 @@ public class RegisterRequest {
     @NotBlank(message = "İstifadəçi adı boş ola bilməz")
     private String username;
 
-    @NotBlank(message = "Şifrə boş ola bilməz")
-    @Size(min = 8, message = "Şifrə ən azı 8 simvol olmalıdır")
+    // Standart @Size əvəzinə müəllimin @ValidPassword-unu yazırıq
+    @ValidPassword
     private String password;
 
     @NotBlank(message = "Email boş ola bilməz")
