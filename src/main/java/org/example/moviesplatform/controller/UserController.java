@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Tag(name = "User Management", description = "İstifadəçi əməliyyatları")
 public class UserController {
@@ -38,7 +38,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(dto));
     }
 
-    @PatchMapping("/{id}") // Partial update üçün PATCH daha uyğundur
+    @PatchMapping("/{id}")
     @Operation(summary = "Məlumatları qismən yenilə")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @Valid @RequestBody UserUpdateDTO dto) {

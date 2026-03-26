@@ -2,7 +2,10 @@ package org.example.moviesplatform.error.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.error.model.ErrorResponse;
+import org.example.moviesplatform.error.model.DirectorNotFoundException;
 import org.example.moviesplatform.error.model.MovieNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
+import org.example.moviesplatform.error.model.RoleNotFoundException;
 import org.example.moviesplatform.error.model.UserNotFoundException;
 import org.example.moviesplatform.error.model.WishlistNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -48,21 +51,29 @@ public class GlobalExceptionHandler {
     // 4. NOT FOUND (404)
     @ExceptionHandler({
             UserNotFoundException.class, MovieNotFoundException.class,
-            WishlistNotFoundException.class // Digər NotFound-ları bura əlavə et
+            WishlistNotFoundException.class, RoleNotFoundException.class,
+            DirectorNotFoundException.class
     })
     public ResponseEntity<ErrorResponse> handleNotFound(RuntimeException ex) {
         log.warn("Resource not found: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, "Not Found", ex.getMessage(), null);
     }
 
-    // 5. DATABASE XƏTALARI (500)
+    // 5. CONFLICT (409 - Artıq mövcuddur)
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleConflict(ResourceAlreadyExistsException ex) {
+        log.warn("Resource already exists: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.CONFLICT, "Conflict", ex.getMessage(), null);
+    }
+
+    // 6. DATABASE XƏTALARI (500)
     @ExceptionHandler(org.springframework.dao.DataAccessException.class)
     public ResponseEntity<ErrorResponse> handleDatabaseException(org.springframework.dao.DataAccessException ex) {
         log.error("Database connection error: ", ex);
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Database Error", "Verilənlər bazası ilə əlaqə zamanı daxili xəta baş verdi.", null);
     }
 
-    // 6. GENERAL EXCEPTION (Bütün digər gözlənilməyən xətalar)
+    // 7. GENERAL EXCEPTION (Bütün digər gözlənilməyən xətalar)
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAll(Exception ex) {
         log.error("Unexpected error occurred: ", ex);

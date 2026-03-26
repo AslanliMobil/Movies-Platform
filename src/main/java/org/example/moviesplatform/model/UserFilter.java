@@ -37,5 +37,5 @@ public class UserFilter {
     private LocalDateTime createdAtTo;
 
     @Schema(description = "Silinmiş istifadəçiləri də daxil etmək üçün (default: false)", example = "false")
-    private Boolean includeDeleted = false; // Real layihədə adminlər silinənləri də görmək istəyə bilər
+    private Boolean includeDeleted = false;
 }

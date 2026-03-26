@@ -33,13 +33,13 @@ public class WatchHistory {
     private Movie movie;
 
     @Column(name = "watched_seconds", nullable = false)
-    private Long watchedSeconds = 0L; // stopped_at əvəzinə daha texniki ad
+    private Long watchedSeconds = 0L;
 
     @Column(name = "progress_percentage")
     private Double progressPercentage = 0.0; // 0.0 - 100.0 arası
 
     @Column(name = "is_completed", nullable = false)
-    private Boolean isCompleted = false; // isFinished əvəzinə
+    private Boolean isCompleted = false;
 
     @Column(name = "watch_count")
     private Integer watchCount = 1; // İstifadəçinin bu filmə neçə dəfə kliklədiyini izləmək üçün
@@ -52,7 +52,6 @@ public class WatchHistory {
     @Column(name = "first_watched_at", updatable = false)
     private LocalDateTime firstWatchedAt;
 
-    // Köməkçi metod: Proqresi hesablamaq üçün
     public void calculateProgress(Integer movieDurationInMinutes) {
         if (movieDurationInMinutes == null || movieDurationInMinutes == 0) return;
 

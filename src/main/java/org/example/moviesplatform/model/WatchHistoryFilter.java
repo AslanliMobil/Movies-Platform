@@ -20,7 +20,7 @@ public class WatchHistoryFilter {
     private Integer movieId; // Konkret filmin tarixçəsini yoxlamaq üçün
 
     @Schema(description = "Film tam bitibmi (90%+ baxılıbmi)?")
-    private Boolean isCompleted; // isFinished əvəzinə Entity-yə uyğun ad
+    private Boolean isCompleted;
 
     @Schema(description = "Minimum baxış faizi (məs: 50%-dən çox baxılanlar)")
     private Double minProgressPercentage;

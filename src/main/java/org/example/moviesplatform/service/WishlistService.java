@@ -5,7 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.WishlistDTO;
 import org.example.moviesplatform.entity.Wishlist;
 import org.example.moviesplatform.error.model.MovieNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.error.model.UserNotFoundException;
+import org.example.moviesplatform.error.model.WishlistNotFoundException;
 import org.example.moviesplatform.mapper.WishlistMapper;
 import org.example.moviesplatform.repository.MovieRepository;
 import org.example.moviesplatform.security.repository.UserRepository;
@@ -29,11 +31,14 @@ public class WishlistService {
     public List<WishlistDTO> getWishlistByUserId(Integer userId) {
         log.info("Fetching wishlist for user {}", userId);
 
-        if (!userRepository.existsById(Long.valueOf(userId))) {
+        // Long-a çevirərkən yarana biləcək potensial xətanı sığortalayırıq
+        if (!userRepository.existsById(userId.longValue())) {
+            log.error("User with ID {} not found in database", userId);
             throw new UserNotFoundException("User not found: " + userId);
         }
 
-        return wishlistMapper.toDTOList(wishlistRepository.findByUserEntity_IdOrderByCreatedAtDesc(userId));
+        List<Wishlist> entities = wishlistRepository.findByUserEntity_IdOrderByCreatedAtDesc(userId);
+        return wishlistMapper.toDTOList(entities);
     }
 
     @Transactional
@@ -43,11 +48,12 @@ public class WishlistService {
         }
 
         if (wishlistRepository.existsByIdUserIdAndIdMovieId(dto.getUserId(), dto.getMovieId())) {
-            throw new RuntimeException("Movie already in wishlist!");
+            throw new ResourceAlreadyExistsException("Movie already in wishlist!");
         }
 
         Wishlist wishlist = wishlistMapper.toEntity(dto);
-        wishlist.setUserEntity(userRepository.getReferenceById(Long.valueOf(dto.getUserId())));
+        // getReferenceById daha performanslıdır
+        wishlist.setUserEntity(userRepository.getReferenceById(dto.getUserId().longValue()));
         wishlist.setMovie(movieRepository.getReferenceById(dto.getMovieId()));
 
         return wishlistMapper.toDTO(wishlistRepository.save(wishlist));
@@ -56,7 +62,7 @@ public class WishlistService {
     @Transactional
     public void remove(Integer userId, Integer movieId) {
         if (!wishlistRepository.existsByIdUserIdAndIdMovieId(userId, movieId)) {
-            throw new RuntimeException("Wishlist item not found.");
+            throw new WishlistNotFoundException("Wishlist item not found.");
         }
         wishlistRepository.deleteByUserIdAndMovieId(userId, movieId);
     }

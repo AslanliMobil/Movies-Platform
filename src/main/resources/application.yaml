@@ -1,8 +1,17 @@
+server:
+  port: 8082
+
 spring:
   application:
     name: MoviesPlatform
   profiles:
     active: local
+
+  # Redis olmadan startup ilişməsin deyə avto-konfiqurasiyanı söndürürük
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration
 
   # Database Configuration
   datasource:
@@ -15,20 +24,6 @@ spring:
       idle-timeout: 30000
       max-lifetime: 2000000
       connection-timeout: 60000
-
-
-      # MinIO Konfiqurasiyası
-  minio:
-        url: http://localhost:9000
-        access-key: minioadmin
-        secret-key: minioadmin
-        bucket-name: movie-videos
-
-  # File Upload Configuration (Video üçün vacibdir)
-  servlet:
-    multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
 
   # JPA and Hibernate configurations
   jpa:
@@ -45,11 +40,31 @@ spring:
     change-log: classpath:liquibase/changelog-master.yml
     enabled: true
 
-  # Redis Data configuration
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+  # === MAIL KONFİQURASİYASI ===
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: aslanli.mobil9@gmail.com
+    password: "ozhpghbaugihbfxx" # Boşluqlar silindi və dırnağa alındı
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # MinIO Konfiqurasiyası
+  minio:
+    url: http://localhost:9000
+    access-key: minioadmin
+    secret-key: minioadmin
+    bucket-name: movie-videos
+
+  # File Upload Configuration
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
 
 # Custom Application Parametrlər
 application:
@@ -57,8 +72,6 @@ application:
     jwt:
       secret-key: ${JWT_SECRET:secure-and-very-long-secret-key-for-jwt-at-least-32-chars}
       expiration-ms: 86400000 # 1 gün
-
-
 
 # Swagger/OpenAPI Configuration
 springdoc:
@@ -68,20 +81,9 @@ springdoc:
     path: /swagger-ui.html
     operationsSorter: alpha
 
-server:
-  port: 8081
-
-# Caching Configuration
-cache:
-  redis:
-    paymentmethod:
-      ttl: 3600
-    user:
-      ttl: 10
-
 # Logging Configuration
 logging:
   level:
     root: info
     org.example.moviesplatform: debug
-    org.hibernate.SQL: info # SQL loglarını çoxaldıb konsolu doldurmamaq üçün info etdim
+    org.hibernate.SQL: info

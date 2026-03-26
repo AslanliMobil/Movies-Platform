@@ -3,6 +3,7 @@ package org.example.moviesplatform.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.entity.Role;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.error.model.RoleNotFoundException;
 import org.example.moviesplatform.model.RoleFilter; // Filteri import etdik
 import org.example.moviesplatform.repository.RoleRepository;
@@ -61,7 +62,7 @@ public class RoleService {
     public Role addRole(Role role) {
         // Dublikat yoxlaması: Eyni adda rol bazada olmamalıdır
         if (roleRepository.existsByName(role.getName())) {
-            throw new RuntimeException("Bu adda rol artıq mövcuddur: " + role.getName());
+            throw new ResourceAlreadyExistsException("Bu adda rol artıq mövcuddur: " + role.getName());
         }
 
         Role saved = roleRepository.save(role);

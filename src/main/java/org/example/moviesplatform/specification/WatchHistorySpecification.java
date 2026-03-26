@@ -39,7 +39,7 @@ public class WatchHistorySpecification implements Specification<WatchHistory> {
             predicates.add(cb.equal(root.get("movie").get("id"), filter.getMovieId()));
         }
 
-        // 3. Tamamlanma statusu (Netflix: isCompleted)
+
         if (filter.getIsCompleted() != null) {
             predicates.add(cb.equal(root.get("isCompleted"), filter.getIsCompleted()));
         }

@@ -40,7 +40,6 @@ public class Movie {
     @Column(name = "cover_image_url")
     private String coverImageUrl;
 
-    // ELAVE EDİLDİ: Video linkini saxlamaq üçün sahə
     @Column(name = "video_url")
     private String videoUrl;
 
@@ -50,7 +49,6 @@ public class Movie {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 
-    // ... (digər əlaqələr: genres, actors, director eyni qalır)
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "movie_genres",

@@ -17,6 +17,8 @@ public interface UserRepository extends
      */
     Optional<UserEntity> findByUsername(String username);
 
+    Optional<UserEntity> findByEmail(String email);
+
     /**
      * Qeydiyyat zamanı username yoxlaması.
      */

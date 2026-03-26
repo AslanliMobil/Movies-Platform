@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/reviews")
+@RequestMapping("/api/v1/reviews")
 @RequiredArgsConstructor
 public class ReviewController {
 
@@ -19,7 +19,6 @@ public class ReviewController {
 
     /**
      * Müəyyən bir filmə yazılan rəylər (Səhifələmə ilə).
-     * Məsələn: GET /reviews/movie/1?page=0&size=10&sort=createdAt,desc
      */
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<Page<ReviewDTO>> getByMovie(
@@ -35,7 +34,6 @@ public class ReviewController {
 
     /**
      * Yeni rəy əlavə edir.
-     * @Valid DTO-dakı məhdudiyyətləri yoxlayır.
      */
     @PostMapping
     public ResponseEntity<ReviewDTO> addReview(@Valid @RequestBody ReviewDTO dto) {
@@ -44,7 +42,6 @@ public class ReviewController {
 
     /**
      * Mövcud rəyi yeniləyir (Redaktə).
-     * PUT /reviews/5
      */
     @PutMapping("/{id}")
     public ResponseEntity<ReviewDTO> updateReview(

@@ -19,7 +19,6 @@ public interface UserMapper {
     @Mapping(target = "password", ignore = true)
     UserDTO toUserDTO(UserEntity user);
 
-    // DÜZƏLİŞ: Problemli ignore sətirlərini sildik
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", source = "password")
     UserEntity toEntity(UserDTO dto);

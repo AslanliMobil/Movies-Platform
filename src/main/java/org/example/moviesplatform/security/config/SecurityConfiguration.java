@@ -49,11 +49,12 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
                         // Movies icazələri
-                        .requestMatchers(HttpMethod.GET, "/api/movies/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers("/api/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/movies/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/v1/movies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/v1/videos/**").hasAnyRole("USER", "ADMIN")
 
                         // Wishlist icazələri - Hər iki rol istifadə edə bilər
-                        .requestMatchers("/api/wishlists/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/api/v1/wishlists/**").hasAnyRole("USER", "ADMIN")
 
                         .anyRequest().authenticated()
                 )

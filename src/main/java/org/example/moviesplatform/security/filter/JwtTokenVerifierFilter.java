@@ -21,6 +21,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.crypto.SecretKey;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -47,7 +49,7 @@ public class JwtTokenVerifierFilter extends OncePerRequestFilter {
         String token = authorizationHeader.replace("Bearer ", "");
 
         try {
-            SecretKey key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
+            SecretKey key = Keys.hmacShaKeyFor(secretKeyString.getBytes(StandardCharsets.UTF_8));
 
             Jws<Claims> claimsJws = Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -57,8 +59,10 @@ public class JwtTokenVerifierFilter extends OncePerRequestFilter {
             Claims body = claimsJws.getBody();
             String username = body.getSubject();
 
-            // Authorities hissəsini təhlükəsiz şəkildə String listinə çeviririk
-            List<String> authorities = (List<String>) body.get("authorities");
+            Object authoritiesObj = body.get("authorities");
+            List<String> authorities = (authoritiesObj instanceof List)
+                    ? (List<String>) authoritiesObj
+                    : Collections.emptyList();
 
             Set<SimpleGrantedAuthority> simpleGrantedAuthorities = authorities.stream()
                     .map(SimpleGrantedAuthority::new)

@@ -8,6 +8,7 @@ import org.example.moviesplatform.entity.Review;
 // 1. DÜZƏLİŞ: Köhnə User yerinə yeni UserEntity import edilməlidir
 import org.example.moviesplatform.security.repository.entity.UserEntity;
 import org.example.moviesplatform.error.model.MovieNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.error.model.ReviewNotFoundException;
 import org.example.moviesplatform.error.model.UserNotFoundException;
 import org.example.moviesplatform.mapper.ReviewMapper;
@@ -50,7 +51,7 @@ public class ReviewService {
     @Transactional
     public ReviewDTO addReview(ReviewDTO dto) {
         if (reviewRepository.existsByUserIdAndMovieId(dto.getUserId(), dto.getMovieId())) {
-            throw new RuntimeException("Siz artıq bu filmə rəy yazmısınız.");
+            throw new ResourceAlreadyExistsException("Siz artıq bu filmə rəy yazmısınız.");
         }
 
         // 2. DÜZƏLİŞ: UserEntity istifadəsi və Long ID çevrilməsi (əgər dto.getUserId() Integer-dirsə)

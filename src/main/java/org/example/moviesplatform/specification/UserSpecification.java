@@ -11,7 +11,6 @@ import java.util.List;
 
 public class UserSpecification {
 
-    // 2. DÜZƏLİŞ: Specification<User> -> Specification<UserEntity> edildi
     public static Specification<UserEntity> getSpecification(UserFilter filter) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
@@ -43,9 +42,8 @@ public class UserSpecification {
                 predicates.add(cb.lessThanOrEqualTo(root.get("createdAt"), filter.getCreatedAtTo()));
             }
 
-            // 4. Soft Delete (isDeleted sahəsinin UserEntity-də olduğundan əmin ol)
+            // 4. Soft Delete
             if (filter.getIncludeDeleted() != null && !filter.getIncludeDeleted()) {
-                // Əgər UserEntity-də bu sahə yoxdursa, bu hissəni kommentə al
                 predicates.add(cb.equal(root.get("isDeleted"), false));
             }
 

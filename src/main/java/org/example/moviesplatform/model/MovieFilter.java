@@ -31,8 +31,7 @@ public class MovieFilter {
     private Integer durationFrom;
     private Integer durationTo;
 
-    // ID-lər vasitəsilə mürəkkəb (Join) süzmə
     private Integer genreId;
     private Integer directorId;
-    private Integer actorId; // Bu sahəni də əlavə etdik ki, konkret aktyorun filmlərini tapmaq olsun
+    private Integer actorId; // Konkret aktyorun filmlərini tapmaq olsun
 }

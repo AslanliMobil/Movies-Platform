@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.DirectorDTO;
 import org.example.moviesplatform.entity.Director;
 import org.example.moviesplatform.error.model.DirectorNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.mapper.DirectorMapper;
 import org.example.moviesplatform.model.DirectorFilter;
 import org.example.moviesplatform.repository.DirectorRepository;
@@ -54,7 +55,7 @@ public class DirectorService {
     @Transactional
     public DirectorDTO createDirector(DirectorDTO dto) {
         if (directorRepository.existsByNameIgnoreCase(dto.getName())) {
-            throw new RuntimeException("Bu adda rejissor artıq sistemdə mövcuddur: " + dto.getName());
+            throw new ResourceAlreadyExistsException("Bu adda rejissor artıq sistemdə mövcuddur: " + dto.getName());
         }
 
         if (dto.getDeathDate() != null && dto.getBirthDate() != null) {
@@ -102,7 +103,7 @@ public class DirectorService {
         if (dto.getName() != null) {
             if (!director.getName().equalsIgnoreCase(dto.getName()) &&
                     directorRepository.existsByNameIgnoreCase(dto.getName().trim())) {
-                throw new RuntimeException("Bu adda rejissor artıq mövcuddur!");
+                throw new ResourceAlreadyExistsException("Bu adda rejissor artıq mövcuddur!");
             }
             director.setName(dto.getName().trim());
         }

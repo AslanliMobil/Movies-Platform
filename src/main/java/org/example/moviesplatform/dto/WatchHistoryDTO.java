@@ -33,7 +33,7 @@ public class WatchHistoryDTO {
 
     @PositiveOrZero(message = "Dayanma saniyəsi mənfi ola bilməz")
     @Schema(description = "İstifadəçinin filmi dayandırdığı saniyə")
-    private Long watchedSeconds; // stoppedAt əvəzinə daha aydın ad
+    private Long watchedSeconds;
 
     @Schema(description = "Filmin neçə faizinə baxılıb (0-100)")
     private Double progressPercentage;

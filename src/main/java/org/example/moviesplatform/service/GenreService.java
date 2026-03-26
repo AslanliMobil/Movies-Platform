@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.GenreDTO;
 import org.example.moviesplatform.entity.Genre;
 import org.example.moviesplatform.error.model.GenreNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.mapper.GenreMapper;
 import org.example.moviesplatform.model.GenreFilter;
 import org.example.moviesplatform.repository.GenreRepository;
@@ -49,7 +50,7 @@ public class GenreService {
     @Transactional
     public GenreDTO create(GenreDTO dto) {
         if (genreRepository.existsByNameIgnoreCase(dto.getName())) {
-            throw new RuntimeException("Bu janr artıq sistemdə mövcuddur: " + dto.getName());
+            throw new ResourceAlreadyExistsException("Bu janr artıq sistemdə mövcuddur: " + dto.getName());
         }
 
         Genre genre = genreMapper.toEntity(dto);
@@ -71,7 +72,7 @@ public class GenreService {
         // Əgər ad dəyişirsə, yeni adın başqa bir janrda olub-olmadığını yoxla
         if (!genre.getName().equalsIgnoreCase(dto.getName()) &&
                 genreRepository.existsByNameIgnoreCase(dto.getName())) {
-            throw new RuntimeException("Bu adda digər bir janr artıq mövcuddur!");
+            throw new ResourceAlreadyExistsException("Bu adda digər bir janr artıq mövcuddur!");
         }
 
         genre.setName(dto.getName());

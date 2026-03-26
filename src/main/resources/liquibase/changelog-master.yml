@@ -39,3 +39,7 @@ databaseChangeLog:
       file: liquibase/1/changelog-1.18.yml
   - include:
       file: liquibase/1/changelog-1.19.yml
+  - include:
+      file: liquibase/1/changelog-1.20.yml
+  - include:
+      file: liquibase/1/changelog-1.21.yml

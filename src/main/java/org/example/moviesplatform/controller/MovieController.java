@@ -19,7 +19,7 @@ import java.io.IOException;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/v1/movies") // Bura "v1" əlavə etdik ki, React-lə eyni olsun
+@RequestMapping("/api/v1/movies")
 @RequiredArgsConstructor
 @Tag(name = "Movie Controller", description = "Filmlərin idarə edilməsi və HLS Video Upload")
 public class MovieController {

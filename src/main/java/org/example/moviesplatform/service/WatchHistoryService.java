@@ -32,7 +32,6 @@ public class WatchHistoryService {
     @Transactional(readOnly = true)
     public Page<WatchHistoryDTO> getHistoryByUserId(Integer userId, Pageable pageable) {
         log.debug("User {} üçün bütün tarixçə səhifələnmiş formada çəkilir", userId);
-        // DÜZƏLİŞ: findByUserId -> findByUserEntity_Id
         return watchHistoryRepository.findByUserEntity_Id(userId, pageable)
                 .map(watchHistoryMapper::toDTO);
     }
@@ -40,7 +39,6 @@ public class WatchHistoryService {
     @Transactional(readOnly = true)
     public List<WatchHistoryDTO> getIncompleteHistory(Integer userId) {
         log.debug("User {} üçün yarımçıq qalmış filmlər siyahısı çəkilir", userId);
-        // DÜZƏLİŞ: findByUserIdAnd... -> findByUserEntity_IdAnd...
         return watchHistoryMapper.toDTOList(
                 watchHistoryRepository.findByUserEntity_IdAndIsCompletedFalseOrderByLastWatchedAtDesc(userId)
         );
@@ -55,7 +53,6 @@ public class WatchHistoryService {
                 .orElseThrow(() -> new MovieNotFoundException("Film tapılmadı: " + dto.getMovieId()));
 
         WatchHistory history = watchHistoryRepository
-                // DÜZƏLİŞ: findByUserIdAndMovieId -> findByUserEntity_IdAndMovieId
                 .findByUserEntity_IdAndMovieId(dto.getUserId(), dto.getMovieId())
                 .orElseGet(() -> {
                     WatchHistory newHistory = watchHistoryMapper.toEntity(dto);
@@ -85,7 +82,6 @@ public class WatchHistoryService {
     @Transactional
     public void clearHistoryByUserId(Integer userId) {
         log.warn("User {} üçün bütün tarixçə təmizlənir!", userId);
-        // DÜZƏLİŞ: deleteAllByUserId metodunun Repository-dəki JPQL qarşılığı artıq userEntity-yə baxır
         watchHistoryRepository.deleteAllByUserId(userId);
     }
 }

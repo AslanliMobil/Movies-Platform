@@ -17,8 +17,6 @@ public class MovieSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 0. Həmişə yalnız silinməmiş filmləri gətir (Soft Delete Protection)
-            // Qeyd: @Where annotasiyası olsa belə, bura yazmaq daha sığortalıdır.
             predicates.add(cb.equal(root.get("isDeleted"), false));
 
             // 1. Başlığa görə axtarış
@@ -51,19 +49,19 @@ public class MovieSpecification {
                 predicates.add(cb.lessThanOrEqualTo(root.get("duration"), filter.getDurationTo()));
             }
 
-            // 5. Rejissora görə süzmə
+            // 5. Rejissora görə
             if (filter.getDirectorId() != null) {
                 predicates.add(cb.equal(root.get("director").get("id"), filter.getDirectorId()));
             }
 
-            // 6. Janra görə süzmə
+            // 6. Janra görə
             if (filter.getGenreId() != null) {
                 Join<Movie, Genre> genreJoin = root.join("genres");
                 predicates.add(cb.equal(genreJoin.get("id"), filter.getGenreId()));
                 query.distinct(true);
             }
 
-            // 7. Aktyora görə süzmə
+            // 7. Aktyora görə
             if (filter.getActorId() != null) {
                 Join<Movie, Actor> actorJoin = root.join("actors");
                 predicates.add(cb.equal(actorJoin.get("id"), filter.getActorId()));

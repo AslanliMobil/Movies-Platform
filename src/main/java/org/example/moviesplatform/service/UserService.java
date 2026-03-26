@@ -6,6 +6,7 @@ import org.example.moviesplatform.dto.UserDTO;
 import org.example.moviesplatform.dto.UserUpdateDTO;
 // 1. DÜZƏLİŞ: Köhnə User yerinə UserEntity
 import org.example.moviesplatform.security.repository.entity.UserEntity;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.error.model.UserNotFoundException;
 import org.example.moviesplatform.mapper.UserMapper;
 import org.example.moviesplatform.model.UserFilter;
@@ -31,14 +32,12 @@ public class UserService {
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllUsers(UserFilter filter, Pageable pageable) {
         log.debug("İstifadəçilər filtrlənir: {}", filter);
-        // UserSpecification daxilində də User -> UserEntity dəyişməli ola bilər
         Specification<UserEntity> spec = UserSpecification.getSpecification(filter);
         return userRepository.findAll(spec, pageable).map(userMapper::toUserDTO);
     }
 
     @Transactional(readOnly = true)
     public UserEntity findEntityById(Integer id) {
-        // 3. DÜZƏLİŞ: Integer ID-ni Long-a çeviririk
         return userRepository.findById(id.longValue())
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
     }
@@ -48,7 +47,7 @@ public class UserService {
         log.info("Yeni istifadəçi yaradılır: {}", dto.getUsername());
 
         if (userRepository.existsByUsername(dto.getUsername())) {
-            throw new RuntimeException("Username artıq istifadə olunub: " + dto.getUsername());
+            throw new ResourceAlreadyExistsException("Username artıq istifadə olunub: " + dto.getUsername());
         }
 
         UserEntity user = userMapper.toEntity(dto);

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.ActorDTO;
 import org.example.moviesplatform.entity.Actor;
 import org.example.moviesplatform.error.model.ActorNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.mapper.ActorMapper;
 import org.example.moviesplatform.model.ActorFilter;
 import org.example.moviesplatform.repository.ActorRepository;
@@ -58,7 +59,7 @@ public class ActorService {
         log.info("Creating new actor: {}", dto.getName());
 
         if (actorRepository.existsByNameIgnoreCase(dto.getName())) {
-            throw new RuntimeException("Bu adda aktyor artıq mövcuddur: " + dto.getName());
+            throw new ResourceAlreadyExistsException("Bu adda aktyor artıq mövcuddur: " + dto.getName());
         }
 
         validateDates(dto.getBirthDate(), dto.getDeathDate());
@@ -105,7 +106,7 @@ public class ActorService {
             String trimmedName = dto.getName().trim();
             if (!actor.getName().equalsIgnoreCase(trimmedName) &&
                     actorRepository.existsByNameIgnoreCase(trimmedName)) {
-                throw new RuntimeException("Bu adda aktyor artıq mövcuddur!");
+                throw new ResourceAlreadyExistsException("Bu adda aktyor artıq mövcuddur!");
             }
             actor.setName(trimmedName);
         }

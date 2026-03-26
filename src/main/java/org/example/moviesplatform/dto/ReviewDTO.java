@@ -19,8 +19,6 @@ public class ReviewDTO {
     @NotNull(message = "İstifadəçi ID-si mütləqdir")
     private Integer userId;
 
-    // Username adətən ancaq "Response" (cavab) zamanı dolur,
-    // rəy yaradanda bunu göndərməyə ehtiyac yoxdur.
     private String username;
 
     @NotNull(message = "Film ID-si mütləqdir")

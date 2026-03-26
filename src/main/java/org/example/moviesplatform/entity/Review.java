@@ -29,7 +29,6 @@ public class Review {
     @Column(nullable = false)
     private Double rating;
 
-    // Sahə adını 'comment' saxlayırıq ki, bazadakı sütunla tam eyni olsun
     @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
 

@@ -7,7 +7,9 @@ import org.example.moviesplatform.entity.Actor;
 import org.example.moviesplatform.entity.Director;
 import org.example.moviesplatform.entity.Genre;
 import org.example.moviesplatform.entity.Movie;
+import org.example.moviesplatform.error.model.DirectorNotFoundException;
 import org.example.moviesplatform.error.model.MovieNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.mapper.MovieMapper;
 import org.example.moviesplatform.model.MovieFilter;
 import org.example.moviesplatform.repository.ActorRepository;
@@ -59,7 +61,7 @@ public class MovieService {
     @Transactional
     public MovieDTO create(MovieDTO dto) {
         if (movieRepository.existsByTitleIgnoreCaseAndIsDeletedFalse(dto.getTitle())) {
-            throw new RuntimeException("Bu adda aktiv film artıq mövcuddur: " + dto.getTitle());
+            throw new ResourceAlreadyExistsException("Bu adda aktiv film artıq mövcuddur: " + dto.getTitle());
         }
         Movie movie = movieMapper.toEntity(dto);
         syncRelations(movie, dto);
@@ -102,7 +104,7 @@ public class MovieService {
     }
 
     /**
-     * Video emalı prosesini başladır.
+     * Video emalı prosesini.
      */
     public void processMovieVideo(Integer movieId, MultipartFile videoFile) throws IOException {
         Movie movie = movieRepository.findById(movieId)
@@ -146,7 +148,7 @@ public class MovieService {
     private void syncRelations(Movie movie, MovieDTO dto) {
         if (dto.getDirector() != null && dto.getDirector().getId() != null) {
             Director director = directorRepository.findById(dto.getDirector().getId())
-                    .orElseThrow(() -> new RuntimeException("Rejissor tapılmadı"));
+                    .orElseThrow(() -> new DirectorNotFoundException("Rejissor tapılmadı"));
             movie.setDirector(director);
         }
         if (dto.getGenres() != null) {
