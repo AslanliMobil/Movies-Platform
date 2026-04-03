@@ -5,6 +5,7 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.entity.Role;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.repository.RoleRepository;
 import org.example.moviesplatform.security.model.RegisterRequest;
 import org.example.moviesplatform.security.repository.UserRepository;
@@ -23,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,18 +48,17 @@ public class AuthUserService implements UserDetailsService {
         UserEntity userEntity = userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
 
-        // Role adlarını (məs: ROLE_USER) SimpleGrantedAuthority-yə çeviririk
         Set<GrantedAuthority> authorities = userEntity.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName())) // Əgər bazada ROLE_ prefixi yoxdursa: "ROLE_" + role.getName()
+                .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toSet());
 
         return new User(
                 userEntity.getUsername(),
                 userEntity.getPassword(),
                 userEntity.isEnabled(),
-                true, // accountNonExpired
-                true, // credentialsNonExpired
-                true, // accountNonLocked
+                true,
+                true,
+                true,
                 authorities
         );
     }
@@ -68,11 +67,14 @@ public class AuthUserService implements UserDetailsService {
     public void register(RegisterRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             log.warn("Qeydiyyat xətası: Username artıq mövcuddur: {}", request.getUsername());
-            throw new RuntimeException("Username already exists!");
+            throw new ResourceAlreadyExistsException("Username already exists!");
         }
 
-        // Qeydiyyat zamanı standart ROLE_USER təyin edirik
-        // Diqqət: Bazada 'ROLE_USER' adlı sətir mütləq olmalıdır!
+        if (userRepository.existsByEmail(request.getEmail())) {
+            log.warn("Qeydiyyat xətası: Email artıq mövcuddur: {}", request.getEmail());
+            throw new ResourceAlreadyExistsException("Email already exists!");
+        }
+
         Role defaultRole = roleRepository.findByName("ROLE_USER")
                 .orElseThrow(() -> new RuntimeException("Default role (ROLE_USER) not found in database!"));
 
@@ -83,7 +85,7 @@ public class AuthUserService implements UserDetailsService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .roles(Set.of(defaultRole))
-                .enabled(true) // İstifadəçi aktiv olsun
+                .enabled(true)
                 .isDeleted(false)
                 .build();
 
@@ -94,7 +96,6 @@ public class AuthUserService implements UserDetailsService {
     public String generateToken(Authentication authResult) {
         SecretKey key = Keys.hmacShaKeyFor(secretKeyString.getBytes());
 
-        // Authorities siyahısını ["ROLE_USER", "ROLE_ADMIN"] formatında claim-ə əlavə edirik
         return Jwts.builder()
                 .setSubject(authResult.getName())
                 .claim("authorities", authResult.getAuthorities().stream()

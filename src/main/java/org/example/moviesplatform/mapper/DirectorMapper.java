@@ -9,15 +9,12 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface DirectorMapper {
 
-    // Entity -> DTO
     DirectorDTO toDTO(Director director);
 
-    // DTO -> Entity (Create zamanı ID-ni və film siyahısını ignore edirik)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "movies", ignore = true)
     Director toEntity(DirectorDTO dto);
 
-    // Siyahı çevrilməsi
     List<DirectorDTO> toDTOList(List<Director> directors);
 
     /**

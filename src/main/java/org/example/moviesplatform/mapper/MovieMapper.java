@@ -14,30 +14,26 @@ import java.util.List;
 )
 public interface MovieMapper {
 
-    // Entity -> DTO
     MovieDTO toDTO(Movie movie);
 
-    // DTO -> Entity (Yeni film yaradarkən)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "averageRating", ignore = true)
-    // Builder problemlərindən qaçmaq üçün "deleted" və ya "isDeleted" mapping-lərini tam sildik.
-    // Çünki bu sahələr default olaraq 'false' (və ya null) gedəcək, bu da bizim üçün kifayətdir.
+    @Mapping(target = "genres", ignore = true)
+    @Mapping(target = "actors", ignore = true)
+    @Mapping(target = "director", ignore = true)
     Movie toEntity(MovieDTO dto);
 
-    // Siyahı çevrilməsi
     List<MovieDTO> toDTOList(List<Movie> movies);
 
-    /**
-     * Mövcud Movie obyektini yeniləmək üçün (Partial Update).
-     * unmappedTargetPolicy = ReportingPolicy.IGNORE sayəsində 'deleted' kimi
-     * mübahisəli sahələrə görə build xətası almayacaqsınız.
-     */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "averageRating", ignore = true)
+    @Mapping(target = "genres", ignore = true)
+    @Mapping(target = "actors", ignore = true)
+    @Mapping(target = "director", ignore = true)
     void updateMovieFromDto(MovieDTO dto, @MappingTarget Movie movie);
 }

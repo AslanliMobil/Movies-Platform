@@ -22,22 +22,21 @@ public interface ReviewRepository extends JpaRepository<Review, Integer>, JpaSpe
     /**
      * Bir istifadəçinin bütün rəylərini səhifələnmiş formada gətirir.
      */
-    Page<Review> findByUserId(Integer userId, Pageable pageable);
+    Page<Review> findByUserId(Long userId, Pageable pageable);
 
     /**
      * Təkrar rəy yoxlaması: Bir user bir filmə yalnız bir dəfə rəy yaza bilsin.
      */
-    boolean existsByUserIdAndMovieId(Integer userId, Integer movieId);
+    boolean existsByUserIdAndMovieId(Long userId, Integer movieId);
 
     /**
      * Filmin orta reytinqini (AVG) hesablayan JPQL sorğusu.
-     * Bu sorğu bütün rəylərin ulduzlarını toplayıb sayına bölür.
      */
     @Query("SELECT AVG(r.rating) FROM Review r WHERE r.movie.id = :movieId")
     Double calculateAverageRating(@Param("movieId") Integer movieId);
 
     /**
-     * ID-yə görə rəyi taparkən User və Movie datalarını birbaşa gətirmək üçün (N+1 probleminin qarşısını alır).
+     * ID-yə görə rəyi taparkən User və Movie datalarını birbaşa gətirmək üçün
      */
     @Query("SELECT r FROM Review r JOIN FETCH r.user JOIN FETCH r.movie WHERE r.id = :id")
     Optional<Review> findByIdWithDetails(@Param("id") Integer id);

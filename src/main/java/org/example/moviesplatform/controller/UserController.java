@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 @Tag(name = "User Management", description = "İstifadəçi əməliyyatları")
 public class UserController {
@@ -32,13 +32,21 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers(filter, pageable));
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "ID-yə görə istifadəçini gətir")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
+        log.info("Tək istifadəçi sorğusu: id={}", id);
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
     @PostMapping
     @Operation(summary = "Yeni istifadəçi qeydiyyatı")
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(dto));
     }
 
-    @PatchMapping("/{id}") // Partial update üçün PATCH daha uyğundur
+    @PatchMapping("/{id}")
     @Operation(summary = "Məlumatları qismən yenilə")
     @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer id, @Valid @RequestBody UserUpdateDTO dto) {
@@ -52,5 +60,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
+    }
+
+    @PostMapping("/{id}/restore")
+    @Operation(summary = "Silinmiş istifadəçini bərpa et")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDTO> restoreUser(@PathVariable Integer id) {
+        log.info("Bərpa sorğusu: id={}", id);
+        return ResponseEntity.ok(userService.restoreUser(id));
     }
 }

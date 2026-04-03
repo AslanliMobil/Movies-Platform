@@ -3,7 +3,7 @@ databaseChangeLog:
       id: update-watch-history-to-final-v2
       author: Aslanli
       changes:
-        # 1. Yeni sütunların əlavə edilməsi
+
         - addColumn:
             tableName: watch_history
             columns:
@@ -28,7 +28,7 @@ databaseChangeLog:
                   type: TIMESTAMP
                   defaultValueComputed: CURRENT_TIMESTAMP
 
-        # 2. Köhnə sütunların silinməsi (Ehtiyac qalmadıqda)
+
         - dropColumn:
             tableName: watch_history
             columnName: stopped_at

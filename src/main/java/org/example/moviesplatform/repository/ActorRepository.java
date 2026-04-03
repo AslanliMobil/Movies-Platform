@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface ActorRepository extends JpaRepository<Actor, Integer>, JpaSpecificationExecutor<Actor> {
     boolean existsByNameIgnoreCase(String name);
+
     List<Actor> findByNameContainingIgnoreCase(String name);
 }

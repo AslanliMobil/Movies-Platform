@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.moviesplatform.dto.MovieDTO;
+import org.example.moviesplatform.model.MovieFilter;
 import org.example.moviesplatform.service.MovieService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,15 +20,21 @@ import java.io.IOException;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
-@RequestMapping("/api/v1/movies") // Bura "v1" əlavə etdik ki, React-lə eyni olsun
+@RequestMapping("/api/v1/movies")
 @RequiredArgsConstructor
 @Tag(name = "Movie Controller", description = "Filmlərin idarə edilməsi və HLS Video Upload")
 public class MovieController {
 
     private final MovieService movieService;
 
+    @GetMapping("/search")
+    @Operation(summary = "Dinamik filtrləmə ilə filmləri axtar")
+    public ResponseEntity<Page<MovieDTO>> search(MovieFilter filter, Pageable pageable) {
+        return ResponseEntity.ok(movieService.search(filter, pageable));
+    }
+
     @GetMapping
-    @Operation(summary = "Bütün filmləri gətir")
+    @Operation(summary = "Bütün filmləri gətir (Səhifələmə ilə)")
     public ResponseEntity<Page<MovieDTO>> getAllMovies(Pageable pageable) {
         return ResponseEntity.ok(movieService.getAllMovies(pageable));
     }
@@ -65,9 +72,16 @@ public class MovieController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @Operation(summary = "Filmi sil (ADMIN)")
+    @Operation(summary = "Filmi sil (Soft Delete) (ADMIN)")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         movieService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/restore")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(summary = "Silinmiş filmi bərpa et (ADMIN)")
+    public ResponseEntity<MovieDTO> restore(@PathVariable Integer id) {
+        return ResponseEntity.ok(movieService.restore(id));
     }
 }

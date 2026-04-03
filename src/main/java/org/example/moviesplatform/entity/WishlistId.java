@@ -17,7 +17,6 @@ public class WishlistId implements Serializable {
     private Integer userId;
     private Integer movieId;
 
-    // Hibernate obyektləri müqayisə edərkən bu metodlara ehtiyac duyur
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -16,16 +16,13 @@ public interface ActorMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    // 'movies' sahəsi Entity-də olmadığı üçün buradan çıxarıldı
     Actor toEntity(ActorDTO dto);
 
-    // Siyahı çevrilməsi
     List<ActorDTO> toDTOList(List<Actor> actors);
 
     /**
      * Mövcud Actor obyektini yeniləmək üçün (Partial Update).
      * nullValuePropertyMappingStrategy = IGNORE: DTO-da null olan sahələr
-     * bazadakı mövcud məlumatı əzmir.
      */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)

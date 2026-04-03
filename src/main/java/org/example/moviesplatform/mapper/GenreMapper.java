@@ -13,14 +13,11 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface GenreMapper {
 
-    // Entity -> DTO
     GenreDTO toDTO(Genre genre);
 
-    // DTO -> Entity (Create zamanı ID-ni bazanın özü idarə etsin)
     @Mapping(target = "id", ignore = true)
     Genre toEntity(GenreDTO dto);
 
-    // Siyahı çevrilməsi
     List<GenreDTO> toDTOList(List<Genre> genres);
 
     /**

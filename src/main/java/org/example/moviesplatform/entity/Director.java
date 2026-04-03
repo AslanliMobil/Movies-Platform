@@ -18,7 +18,7 @@ public class Director {
     @Column(nullable = false)
     private String name;
 
-    @Column(columnDefinition = "TEXT") // Mətnin uzunluğuna limit qoymur
+    @Column(columnDefinition = "TEXT")
     private String biography;
 
     @Column(name = "birth_date")
@@ -27,7 +27,7 @@ public class Director {
     @Column(name = "death_date")
     private LocalDate deathDate;
 
-    // ManyToMany-ni silib OneToMany yazırıq
+
     @OneToMany(mappedBy = "director", fetch = FetchType.LAZY)
     @com.fasterxml.jackson.annotation.JsonIgnore
     private List<Movie> movies;

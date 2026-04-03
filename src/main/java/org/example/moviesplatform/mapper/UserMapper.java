@@ -9,17 +9,20 @@ import java.util.List;
 
 @Mapper(
         componentModel = "spring",
-        unmappedTargetPolicy = ReportingPolicy.IGNORE, // Bu artıq tapılmayanları ignore edir
+        unmappedTargetPolicy = ReportingPolicy.IGNORE,
         injectionStrategy = InjectionStrategy.CONSTRUCTOR
 )
 public interface UserMapper {
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     void updateEntityFromUpdateDto(@MappingTarget UserEntity user, UserUpdateDTO dto);
 
     @Mapping(target = "password", ignore = true)
     UserDTO toUserDTO(UserEntity user);
 
-    // DÜZƏLİŞ: Problemli ignore sətirlərini sildik
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "password", source = "password")
     UserEntity toEntity(UserDTO dto);

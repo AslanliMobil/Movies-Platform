@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.ActorDTO;
 import org.example.moviesplatform.entity.Actor;
 import org.example.moviesplatform.error.model.ActorNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.mapper.ActorMapper;
 import org.example.moviesplatform.model.ActorFilter;
 import org.example.moviesplatform.repository.ActorRepository;
@@ -24,9 +25,6 @@ public class ActorService {
 
     /**
      * 1. BÜTÜN AKTYORLARI GƏTİRMƏK
-     * Məqsəd: Bazadakı hər kəsi siyahı şəklində görmək.
-     * İş prinsipi: Bazadakı bütün 'Actor' məlumatlarını götürür və onları
-     * istifadəçiyə uyğun 'ActorDTO' formatına çevirir.
      */
     public List<ActorDTO> getAllActors() {
         log.info("Fetching all actors");
@@ -35,9 +33,6 @@ public class ActorService {
 
     /**
      * 2. ID-YƏ GÖRƏ AKTYOR TAPMAQ
-     * Məqsəd: Yalnız bir nəfərin detallarını öyrənmək.
-     * İş prinsipi: Verilən ID-ni bazada axtarır. Əgər yoxdursa, 'ActorNotFoundException'
-     * xətası fırladaraq proqramın səhv məlumatla işləməsinin qarşısını alır.
      */
     public ActorDTO getActorById(Integer id) {
         log.info("Fetching actor with id: {}", id);
@@ -48,7 +43,6 @@ public class ActorService {
 
     /**
      * 3. YENİ AKTYOR YARATMAQ
-     * Məqsəd: Bazaya yeni bir aktyor qeydi əlavə etmək.
      * Biznes Qaydaları:
      * - Eyni adda aktyor təkrar qeydiyyatdan keçə bilməz.
      * - Ölüm tarixi doğum tarixindən daha köhnə ola bilməz.
@@ -58,7 +52,7 @@ public class ActorService {
         log.info("Creating new actor: {}", dto.getName());
 
         if (actorRepository.existsByNameIgnoreCase(dto.getName())) {
-            throw new RuntimeException("Bu adda aktyor artıq mövcuddur: " + dto.getName());
+            throw new ResourceAlreadyExistsException("Bu adda aktyor artıq mövcuddur: " + dto.getName());
         }
 
         validateDates(dto.getBirthDate(), dto.getDeathDate());
@@ -70,8 +64,6 @@ public class ActorService {
     /**
      * 4. TAM YENİLƏMƏ (PUT)
      * Məqsəd: Aktyorun bütün məlumatlarını (ad, bioqrafiya və s.) yenidən yazmaq.
-     * İş prinsipi: Mövcud aktyoru tapır və onun bütün köhnə məlumatlarını
-     * göndərilən yeni məlumatlarla tamamilə əvəzləyir.
      */
     @Transactional
     public ActorDTO updateActor(Integer id, ActorDTO dto) {
@@ -92,8 +84,6 @@ public class ActorService {
     /**
      * 5. QİSMİ YENİLƏMƏ (PATCH)
      * Məqsəd: Aktyorun yalnız bir və ya bir neçə sahəsini (məsələn, yalnız bioqrafiyasını) dəyişmək.
-     * İş prinsipi: Göndərilən DTO-da hansı sahə 'null' deyilsə, yalnız həmin sahəni yeniləyir,
-     * qalan məlumatlara isə toxunmur.
      */
     @Transactional
     public ActorDTO patchActor(Integer id, ActorDTO dto) {
@@ -105,7 +95,7 @@ public class ActorService {
             String trimmedName = dto.getName().trim();
             if (!actor.getName().equalsIgnoreCase(trimmedName) &&
                     actorRepository.existsByNameIgnoreCase(trimmedName)) {
-                throw new RuntimeException("Bu adda aktyor artıq mövcuddur!");
+                throw new ResourceAlreadyExistsException("Bu adda aktyor artıq mövcuddur!");
             }
             actor.setName(trimmedName);
         }
@@ -131,8 +121,6 @@ public class ActorService {
     /**
      * 6. AKTYORU SİLMƏK
      * Məqsəd: Aktyorun bazadakı qeydini tamamilə yox etmək.
-     * İş prinsipi: Silməzdən əvvəl həmin aktyorun mövcudluğunu yoxlayır,
-     * yoxdursa xəta verir, varsa silmə əməliyyatını icra edir.
      */
     @Transactional
     public void deleteActor(Integer id) {
@@ -146,8 +134,6 @@ public class ActorService {
     /**
      * 7. DİNAMİK AXtARIŞ (Search)
      * Məqsəd: Verilən filtr şərtlərinə (ad, doğum ili və s.) uyğun aktyorları tapmaq.
-     * İş prinsipi: 'ActorFilter' obyektinə yığılmış axtarış şərtlərini 'ActorSpecification'
-     * vasitəsilə mürəkkəb bir SQL sorğusuna çevirib icra edir.
      */
     public List<ActorDTO> search(ActorFilter filter) {
         log.info("Searching actors with criteria: {}", filter);

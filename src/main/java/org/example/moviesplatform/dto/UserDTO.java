@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import org.example.moviesplatform.Validation.ValidPassword;
 
 import java.time.LocalDateTime;
 
@@ -37,10 +37,8 @@ public class UserDTO {
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank(message = "Parol boş ola bilməz")
-    @Size(min = 8, message = "Parol ən azı 8 simvol olmalıdır")
-    @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$",
-            message = "Parolda ən azı bir rəqəm, bir kiçik və bir böyük hərf olmalıdır")
-    @Schema(description = "Yalnız qeydiyyat və yeniləmə zamanı istifadə olunur", example = "P@ssword123")
+    @ValidPassword
+    @Schema(description = "İlk hərf böyük, ən az 8 simvol, rəqəm olmalıdır", example = "Password123")
     private String password;
 
     @Schema(accessMode = Schema.AccessMode.READ_ONLY)

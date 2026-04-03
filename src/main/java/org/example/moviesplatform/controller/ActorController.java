@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/actors")
+@RequestMapping("/api/v1/actors")
 @RequiredArgsConstructor
 public class ActorController {
 
@@ -21,7 +21,6 @@ public class ActorController {
      * 1. DİNAMİK AXtARIŞ VƏ FİLTRASİYA
      * Məqsəd: Ad, bioqrafiya və ya tarix aralığına görə aktyorları tapmaq.
      * Metod: GET
-     * URL Nümunəsi: /actors/search?name=DiCaprio
      */
     @GetMapping("/search")
     public ResponseEntity<List<ActorDTO>> search(ActorFilter filter) {

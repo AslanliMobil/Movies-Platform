@@ -1,7 +1,7 @@
 package org.example.moviesplatform.controller;
 
 import io.minio.GetObjectArgs;
-import io.minio.MinioClient; // BU IMPORT ÇATIŞMIRDI
+import io.minio.MinioClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
@@ -21,7 +21,7 @@ public class VideoStreamController {
 
     private final MinioClient minioClient;
 
-    @Value("${minio.bucket-name:movie-videos}") // Bucket adını birbaşa kodda yazmaq yerinə properties-dən götürək
+    @Value("${minio.bucket-name:movie-videos}")
     private String bucketName;
 
     @GetMapping("/stream/{movieId}/{fileName}")

@@ -18,7 +18,6 @@ public class MinioService {
 
     private final MinioClient minioClient;
 
-    // YAML-dan oxuya bilməsə, 'movie-videos' istifadə edəcək
     @Value("${minio.bucket-name:movie-videos}")
     private String bucketName;
 
@@ -31,7 +30,6 @@ public class MinioService {
                         try {
                             String objectName = "movies/" + movieId + "/" + file.getFileName().toString();
 
-                            // Content Type teyini
                             String contentType = file.toString().endsWith(".m3u8")
                                     ? "application/x-mpegURL" : "video/MP2T";
 
@@ -53,8 +51,6 @@ public class MinioService {
 
             log.info("✅ Movie ID {} üçün bütün HLS faylları MinIO-ya uğurla yükləndi.", movieId);
 
-            // Opsional: Yükləmə bitdikdən sonra lokal temp qovluğunu təmizlə
-            // cleanUpTempFolder(hlsFolder);
 
         } catch (Exception e) {
             log.error("❌ Qovluq gəzilərkən xəta: ", e);

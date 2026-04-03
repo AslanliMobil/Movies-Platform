@@ -7,7 +7,9 @@ import org.example.moviesplatform.entity.Actor;
 import org.example.moviesplatform.entity.Director;
 import org.example.moviesplatform.entity.Genre;
 import org.example.moviesplatform.entity.Movie;
+import org.example.moviesplatform.error.model.DirectorNotFoundException;
 import org.example.moviesplatform.error.model.MovieNotFoundException;
+import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.mapper.MovieMapper;
 import org.example.moviesplatform.model.MovieFilter;
 import org.example.moviesplatform.repository.ActorRepository;
@@ -59,7 +61,7 @@ public class MovieService {
     @Transactional
     public MovieDTO create(MovieDTO dto) {
         if (movieRepository.existsByTitleIgnoreCaseAndIsDeletedFalse(dto.getTitle())) {
-            throw new RuntimeException("Bu adda aktiv film artıq mövcuddur: " + dto.getTitle());
+            throw new ResourceAlreadyExistsException("Bu adda aktiv film artıq mövcuddur: " + dto.getTitle());
         }
         Movie movie = movieMapper.toEntity(dto);
         syncRelations(movie, dto);
@@ -102,7 +104,7 @@ public class MovieService {
     }
 
     /**
-     * Video emalı prosesini başladır.
+     * Video emalı prosesini.
      */
     public void processMovieVideo(Integer movieId, MultipartFile videoFile) throws IOException {
         Movie movie = movieRepository.findById(movieId)
@@ -128,10 +130,8 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new MovieNotFoundException("URL yeniləmək üçün film tapılmadı"));
 
-        // DÜZƏLİŞ: MinIO strukturuna uyğunluq üçün URL manipulyasiyası
         String finalUrl = videoUrl;
         if (videoUrl != null && videoUrl.contains("movie-videos/")) {
-            // Əgər URL-də "movie-videos/" var, amma "movies/" qovluğu yoxdursa, əlavə edirik
             if (!videoUrl.contains("movie-videos/movies/")) {
                 finalUrl = videoUrl.replace("movie-videos/", "movie-videos/movies/");
                 log.warn("Video URL-i MinIO strukturuna (movies/ qovluğuna) uyğunlaşdırıldı: {}", finalUrl);
@@ -146,18 +146,22 @@ public class MovieService {
     private void syncRelations(Movie movie, MovieDTO dto) {
         if (dto.getDirector() != null && dto.getDirector().getId() != null) {
             Director director = directorRepository.findById(dto.getDirector().getId())
-                    .orElseThrow(() -> new RuntimeException("Rejissor tapılmadı"));
+                    .orElseThrow(() -> new DirectorNotFoundException("Rejissor tapılmadı ID: " + dto.getDirector().getId()));
             movie.setDirector(director);
         }
-        if (dto.getGenres() != null) {
+        if (dto.getGenres() != null && !dto.getGenres().isEmpty()) {
             List<Genre> genres = dto.getGenres().stream()
-                    .map(g -> genreRepository.findById(g.getId()).orElseThrow())
+                    .filter(g -> g.getId() != null)
+                    .map(g -> genreRepository.findById(g.getId())
+                            .orElseThrow(() -> new IllegalArgumentException("Janr tapılmadı ID: " + g.getId())))
                     .collect(Collectors.toList());
             movie.setGenres(genres);
         }
-        if (dto.getActors() != null) {
+        if (dto.getActors() != null && !dto.getActors().isEmpty()) {
             List<Actor> actors = dto.getActors().stream()
-                    .map(a -> actorRepository.findById(a.getId()).orElseThrow())
+                    .filter(a -> a.getId() != null)
+                    .map(a -> actorRepository.findById(a.getId())
+                            .orElseThrow(() -> new IllegalArgumentException("Aktyor tapılmadı ID: " + a.getId())))
                     .collect(Collectors.toList());
             movie.setActors(actors);
         }

@@ -1,10 +1,7 @@
 package org.example.moviesplatform.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,9 +21,9 @@ public class Genre {
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 
-    // ManyToMany əlaqəsi: Bir janr bir çox filmdə ola bilər.
-    // 'mappedBy = "genres"' o deməkdir ki, əlaqənin əsas sahibi Movie entity-sidir.
     @ManyToMany(mappedBy = "genres")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Movie> movies;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -35,14 +32,12 @@ public class Genre {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    // Database-ə ilk dəfə yazılanda işə düşür
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
-    // Məlumat hər dəfə yenilənəndə işə düşür
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

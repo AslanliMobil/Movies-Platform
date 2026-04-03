@@ -22,22 +22,19 @@ databaseChangeLog:
                   constraints:
                     nullable: false
 
-        # Primary Key (user_id və role_id cütlüyü unikal olmalıdır)
         - addPrimaryKey:
             tableName: user_roles
             columnNames: user_id, role_id
             constraintName: pk_user_roles
 
-        # Users cədvəlinə əlaqə
         - addForeignKeyConstraint:
             baseTableName: user_roles
             baseColumnNames: user_id
             constraintName: fk_user_roles_user
-            referencedTableName: users
+            referencedTableName: application_users
             referencedColumnNames: id
             onDelete: CASCADE
 
-        # Roles cədvəlinə əlaqə
         - addForeignKeyConstraint:
             baseTableName: user_roles
             baseColumnNames: role_id

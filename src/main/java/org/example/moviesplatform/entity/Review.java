@@ -2,7 +2,9 @@ package org.example.moviesplatform.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
+
 import org.example.moviesplatform.security.repository.entity.UserEntity;
 
 @Entity
@@ -29,7 +31,6 @@ public class Review {
     @Column(nullable = false)
     private Double rating;
 
-    // Sahə adını 'comment' saxlayırıq ki, bazadakı sütunla tam eyni olsun
     @Column(name = "comment", columnDefinition = "TEXT")
     private String comment;
 

@@ -13,13 +13,11 @@ import java.util.Arrays;
 @Component
 public class LoggingAspect {
 
-    // 1. Hansı metodları izləyəcəyimizi təyin edirik (Bütün Service və Controller-lər)
     @Pointcut("within(@org.springframework.stereotype.Service *)"
             + " || within(@org.springframework.web.bind.annotation.RestController *)")
     public void springBeanPointcut() {
     }
 
-    // 2. Metod başlamazdan əvvəl loq yazır
     @Before("springBeanPointcut()")
     public void logBefore(JoinPoint joinPoint) {
         log.info("===> AOP BEFORE: {}() başladı. Arqumentlər: {}",
@@ -27,13 +25,11 @@ public class LoggingAspect {
                 Arrays.toString(joinPoint.getArgs()));
     }
 
-    // 3. Metod bitəndən sonra loq yazır
     @After("springBeanPointcut()")
     public void logAfter(JoinPoint joinPoint) {
         log.info("<=== AOP AFTER: {}() bitdi.", joinPoint.getSignature().getName());
     }
 
-    // 4. (ƏLAVƏ) Metodun nə qədər vaxt apardığını ölçür (Mükəmməl bir xüsusiyyət)
     @Around("springBeanPointcut()")
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
