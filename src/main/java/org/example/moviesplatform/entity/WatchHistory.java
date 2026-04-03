@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "watch_history", uniqueConstraints = {
-        // Bir istifadəçinin bir film üçün yalnız bir tarixçə qeydi ola bilər
         @UniqueConstraint(columnNames = {"user_id", "movie_id"})
 })
 @Getter
@@ -35,14 +34,14 @@ public class WatchHistory {
     @Column(name = "watched_seconds", nullable = false)
     private Long watchedSeconds = 0L;
 
-    @Column(name = "progress_percentage")
-    private Double progressPercentage = 0.0; // 0.0 - 100.0 arası
+    @Column(name = "progress_percentage", columnDefinition = "numeric(5,2)")
+    private Double progressPercentage = 0.0;
 
     @Column(name = "is_completed", nullable = false)
     private Boolean isCompleted = false;
 
     @Column(name = "watch_count")
-    private Integer watchCount = 1; // İstifadəçinin bu filmə neçə dəfə kliklədiyini izləmək üçün
+    private Integer watchCount = 1;
 
     @UpdateTimestamp
     @Column(name = "last_watched_at")
@@ -60,7 +59,6 @@ public class WatchHistory {
 
         if (this.progressPercentage > 100.0) this.progressPercentage = 100.0;
 
-        // Əgər 90%-dən çoxuna baxıbsa, avtomatik tamamlanmış sayılır
         this.isCompleted = this.progressPercentage >= 90.0;
     }
 }

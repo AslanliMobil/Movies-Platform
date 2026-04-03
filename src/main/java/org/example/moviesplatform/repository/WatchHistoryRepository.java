@@ -32,6 +32,5 @@ public interface WatchHistoryRepository extends JpaRepository<WatchHistory, Long
     @Query("DELETE FROM WatchHistory w WHERE w.userEntity.id = :userId")
     void deleteAllByUserId(@Param("userId") Integer userId);
 
-    // 6. Filmin neçə nəfər tərəfindən bitirildiyini saymaq (Burada movieId dəyişməyibsə qalır)
     long countByMovieIdAndIsCompletedTrue(Integer movieId);
 }

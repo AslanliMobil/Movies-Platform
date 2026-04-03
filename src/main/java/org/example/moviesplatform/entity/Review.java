@@ -2,7 +2,9 @@ package org.example.moviesplatform.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
+
 import org.example.moviesplatform.security.repository.entity.UserEntity;
 
 @Entity

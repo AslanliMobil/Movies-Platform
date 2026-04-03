@@ -7,7 +7,6 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
-import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -28,7 +27,6 @@ public class RedisConfig {
         template.setConnectionFactory(connectionFactory);
         template.setKeySerializer(new StringRedisSerializer());
 
-        // Custom serializer yaradırıq
         template.setValueSerializer(jacksonSerializer());
         return template;
     }
@@ -39,16 +37,13 @@ public class RedisConfig {
                 .entryTtl(Duration.ofMinutes(60))
                 .disableCachingNullValues()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
-                // Cache üçün də eyni serializer-i istifadə edirik
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jacksonSerializer()));
     }
 
-    // LocalDate və LocalDateTime üçün özəl Jackson Serializer
     private GenericJackson2JsonRedisSerializer jacksonSerializer() {
         ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule()); // Tarixləri tanıması üçün
+        objectMapper.registerModule(new JavaTimeModule());
 
-        // Redis-dən datanı oxuyanda hansı klassa çevirəcəyini bilməsi üçün tip məlumatını saxlayırıq
         objectMapper.activateDefaultTyping(
                 objectMapper.getPolymorphicTypeValidator(),
                 ObjectMapper.DefaultTyping.NON_FINAL,

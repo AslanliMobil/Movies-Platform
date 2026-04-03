@@ -2,8 +2,10 @@ package org.example.moviesplatform.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.moviesplatform.dto.WatchHistoryDTO;
+import org.example.moviesplatform.model.WatchHistoryFilter;
 import org.example.moviesplatform.service.WatchHistoryService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,11 +23,15 @@ public class WatchHistoryController {
 
     private final WatchHistoryService watchHistoryService;
 
+    @GetMapping("/search")
+    @Operation(summary = "Tarixçəni dinamik filtrlərlə axtar")
+    public ResponseEntity<Page<WatchHistoryDTO>> searchHistory(WatchHistoryFilter filter, Pageable pageable) {
+        return ResponseEntity.ok(watchHistoryService.search(filter, pageable));
+    }
+
     @GetMapping("/user/{userId}")
     @Operation(summary = "İstifadəçinin bütün izləmə tarixçəsi (Səhifəli)")
-    public ResponseEntity<Page<WatchHistoryDTO>> getUserHistory(
-            @PathVariable Integer userId,
-            Pageable pageable) {
+    public ResponseEntity<Page<WatchHistoryDTO>> getUserHistory(@PathVariable Integer userId, Pageable pageable) {
         return ResponseEntity.ok(watchHistoryService.getHistoryByUserId(userId, pageable));
     }
 
@@ -37,7 +43,7 @@ public class WatchHistoryController {
 
     @PatchMapping("/progress")
     @Operation(summary = "İzləmə proqresini yenilə (Saniyə ilə)")
-    public ResponseEntity<WatchHistoryDTO> updateProgress(@RequestBody WatchHistoryDTO dto) {
+    public ResponseEntity<WatchHistoryDTO> updateProgress(@Valid @RequestBody WatchHistoryDTO dto) {
         return ResponseEntity.ok(watchHistoryService.saveOrUpdateHistory(dto));
     }
 

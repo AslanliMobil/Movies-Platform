@@ -4,7 +4,7 @@ databaseChangeLog:
       author: Aslanli
       changes:
         - addColumn:
-            tableName: users
+            tableName: application_users
             columns:
               - column:
                   name: is_deleted

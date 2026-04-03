@@ -43,8 +43,8 @@ public class Movie {
     @Column(name = "video_url")
     private String videoUrl;
 
-    @Column(name = "average_rating")
-    private Double averageRating = 0.0;
+    @Column(name = "average_rating", columnDefinition = "numeric(4,2)")
+    private Double averageRating;
 
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;

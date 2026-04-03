@@ -40,7 +40,6 @@ public class MovieDTO implements Serializable {
 
     private String coverImageUrl;
 
-    // MinIO-da saxlanılan video faylının yolu və ya adı
     private String videoUrl;
 
     @DecimalMin(value = "0.0")

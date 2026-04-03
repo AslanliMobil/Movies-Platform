@@ -4,6 +4,7 @@ import org.example.moviesplatform.dto.ReviewDTO;
 import org.example.moviesplatform.entity.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -19,7 +20,6 @@ public interface ReviewMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-
     Review toEntity(ReviewDTO dto);
 
     List<ReviewDTO> toDTOList(List<Review> reviews);

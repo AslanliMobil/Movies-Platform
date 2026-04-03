@@ -32,6 +32,14 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers(filter, pageable));
     }
 
+    @GetMapping("/{id}")
+    @Operation(summary = "ID-yə görə istifadəçini gətir")
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    public ResponseEntity<UserDTO> getUserById(@PathVariable Integer id) {
+        log.info("Tək istifadəçi sorğusu: id={}", id);
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
     @PostMapping
     @Operation(summary = "Yeni istifadəçi qeydiyyatı")
     public ResponseEntity<UserDTO> createUser(@Valid @RequestBody UserDTO dto) {
@@ -52,5 +60,13 @@ public class UserController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUser(@PathVariable Integer id) {
         userService.deleteUser(id);
+    }
+
+    @PostMapping("/{id}/restore")
+    @Operation(summary = "Silinmiş istifadəçini bərpa et")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UserDTO> restoreUser(@PathVariable Integer id) {
+        log.info("Bərpa sorğusu: id={}", id);
+        return ResponseEntity.ok(userService.restoreUser(id));
     }
 }

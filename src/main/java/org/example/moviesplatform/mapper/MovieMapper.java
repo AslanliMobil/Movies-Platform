@@ -20,6 +20,9 @@ public interface MovieMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "averageRating", ignore = true)
+    @Mapping(target = "genres", ignore = true)
+    @Mapping(target = "actors", ignore = true)
+    @Mapping(target = "director", ignore = true)
     Movie toEntity(MovieDTO dto);
 
     List<MovieDTO> toDTOList(List<Movie> movies);
@@ -29,5 +32,8 @@ public interface MovieMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "averageRating", ignore = true)
+    @Mapping(target = "genres", ignore = true)
+    @Mapping(target = "actors", ignore = true)
+    @Mapping(target = "director", ignore = true)
     void updateMovieFromDto(MovieDTO dto, @MappingTarget Movie movie);
 }

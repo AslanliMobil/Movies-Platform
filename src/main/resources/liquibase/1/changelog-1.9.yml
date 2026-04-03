@@ -31,7 +31,7 @@ databaseChangeLog:
             constraintName: fk_wishlists_user
             baseTableName: wishlists
             baseColumnNames: user_id
-            referencedTableName: users
+            referencedTableName: application_users
             referencedColumnNames: id
 
         - addForeignKeyConstraint:
@@ -40,4 +40,3 @@ databaseChangeLog:
             baseColumnNames: movie_id
             referencedTableName: movies
             referencedColumnNames: id
-

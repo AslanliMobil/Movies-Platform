@@ -21,7 +21,6 @@ public class ActorController {
      * 1. DİNAMİK AXtARIŞ VƏ FİLTRASİYA
      * Məqsəd: Ad, bioqrafiya və ya tarix aralığına görə aktyorları tapmaq.
      * Metod: GET
-     * URL Nümunəsi: /actors/search?name=DiCaprio
      */
     @GetMapping("/search")
     public ResponseEntity<List<ActorDTO>> search(ActorFilter filter) {

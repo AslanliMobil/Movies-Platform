@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 
 @Getter
 @Setter
-@NoArgsConstructor  // JSON deserialization üçün mütləqdir
+@NoArgsConstructor
 @AllArgsConstructor
 public class LoginRequest {
     @NotBlank(message = "İstifadəçi adı boş ola bilməz")

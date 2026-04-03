@@ -16,7 +16,7 @@ public class RoleCacheRepository {
     private final Long ttl;
 
     public RoleCacheRepository(RedisTemplate<String, Object> redisTemplate,
-                              @Value("${cache.redis.role.ttl:3600}") Long ttl) {
+                               @Value("${cache.redis.role.ttl:3600}") Long ttl) {
         this.redisTemplate = redisTemplate;
         this.ttl = ttl;
     }

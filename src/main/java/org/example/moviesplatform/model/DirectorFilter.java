@@ -16,7 +16,6 @@ public class DirectorFilter {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate birthDateTo;
 
-    // Ölüm tarixinə görə filtr sahələri
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate deathDateFrom;
 

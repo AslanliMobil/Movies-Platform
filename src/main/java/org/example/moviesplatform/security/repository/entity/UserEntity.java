@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.example.moviesplatform.entity.Role;
 import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -47,7 +48,7 @@ public class UserEntity {
             joinColumns = @JoinColumn(
                     name = "user_id",
                     referencedColumnName = "id",
-                    foreignKey = @ForeignKey(name = "fk_user_roles_application_user") // Xüsusi ad veririk
+                    foreignKey = @ForeignKey(name = "fk_user_roles_application_user")
             ),
             inverseJoinColumns = @JoinColumn(
                     name = "role_id",

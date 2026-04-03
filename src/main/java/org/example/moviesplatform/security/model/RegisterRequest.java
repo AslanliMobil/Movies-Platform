@@ -15,7 +15,6 @@ public class RegisterRequest {
     @NotBlank(message = "İstifadəçi adı boş ola bilməz")
     private String username;
 
-    // Standart @Size əvəzinə müəllimin @ValidPassword-unu yazırıq
     @ValidPassword
     private String password;
 

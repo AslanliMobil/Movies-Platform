@@ -25,7 +25,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: rating
-                  type: INT
+                  type: DOUBLE
                   constraints:
                     nullable: false
               - column:
@@ -46,7 +46,7 @@ databaseChangeLog:
             constraintName: fk_reviews_user
             baseTableName: reviews
             baseColumnNames: user_id
-            referencedTableName: users
+            referencedTableName: application_users
             referencedColumnNames: id
 
         - addForeignKeyConstraint:
@@ -55,4 +55,3 @@ databaseChangeLog:
             baseColumnNames: movie_id
             referencedTableName: movies
             referencedColumnNames: id
-

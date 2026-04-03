@@ -4,14 +4,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.UserDTO;
 import org.example.moviesplatform.dto.UserUpdateDTO;
-// 1. DÜZƏLİŞ: Köhnə User yerinə UserEntity
-import org.example.moviesplatform.security.repository.entity.UserEntity;
+import org.example.moviesplatform.entity.Role;
 import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
 import org.example.moviesplatform.error.model.UserNotFoundException;
 import org.example.moviesplatform.mapper.UserMapper;
 import org.example.moviesplatform.model.UserFilter;
-// 2. DÜZƏLİŞ: UserRepository artıq security paketindədir
+import org.example.moviesplatform.repository.RoleRepository;
 import org.example.moviesplatform.security.repository.UserRepository;
+import org.example.moviesplatform.security.repository.entity.UserEntity;
 import org.example.moviesplatform.specification.UserSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,19 +21,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
-@Service("adminUserService") // Adını dəyişdik ki, AuthUserService ilə toqquşmasın
+@Service("adminUserService")
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
 
     @Transactional(readOnly = true)
     public Page<UserDTO> getAllUsers(UserFilter filter, Pageable pageable) {
         log.debug("İstifadəçilər filtrlənir: {}", filter);
         Specification<UserEntity> spec = UserSpecification.getSpecification(filter);
         return userRepository.findAll(spec, pageable).map(userMapper::toUserDTO);
+    }
+
+    @Transactional(readOnly = true)
+    public UserDTO getUserById(Integer id) {
+        log.info("İstifadəçi ID-yə görə axtarılır: {}", id);
+        UserEntity user = findEntityById(id);
+        return userMapper.toUserDTO(user);
     }
 
     @Transactional(readOnly = true)
@@ -49,9 +57,17 @@ public class UserService {
         if (userRepository.existsByUsername(dto.getUsername())) {
             throw new ResourceAlreadyExistsException("Username artıq istifadə olunub: " + dto.getUsername());
         }
+        if (userRepository.existsByEmail(dto.getEmail())) {
+            throw new ResourceAlreadyExistsException("Email artıq istifadə olunub: " + dto.getEmail());
+        }
+
+        Role defaultRole = roleRepository.findByName("ROLE_USER")
+                .orElseThrow(() -> new RuntimeException("Default role (ROLE_USER) not found in database!"));
 
         UserEntity user = userMapper.toEntity(dto);
         user.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+        user.getRoles().add(defaultRole);
 
         return userMapper.toUserDTO(userRepository.save(user));
     }
@@ -74,7 +90,24 @@ public class UserService {
     @Transactional
     public void deleteUser(Integer id) {
         UserEntity user = findEntityById(id);
-        userRepository.delete(user);
-        log.warn("İstifadəçi silindi: ID {}", id);
+        user.setDeleted(true);
+        userRepository.save(user);
+        log.warn("İstifadəçi soft-delete edildi (is_deleted=true): ID {}", id);
+    }
+
+    @Transactional
+    public UserDTO restoreUser(Integer id) {
+        log.info("Silinmiş istifadəçi bərpa edilir: ID {}", id);
+        UserEntity user = findEntityById(id);
+
+        if (!user.isDeleted()) {
+            throw new RuntimeException("Bu istifadəçi onsuz da aktivdir və silinməyib!");
+        }
+
+        user.setDeleted(false);
+        UserEntity restoredUser = userRepository.save(user);
+
+        log.info("İstifadəçi uğurla bərpa edildi: ID {}, Username: {}", restoredUser.getId(), restoredUser.getUsername());
+        return userMapper.toUserDTO(restoredUser);
     }
 }

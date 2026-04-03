@@ -14,12 +14,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RoleDTO {
 
+    public interface Create {
+    }
+
     private Integer id;
 
-    @NotBlank(message = "Rol adı boş ola bilməz")
+    @NotBlank(message = "Rol adı boş ola bilməz", groups = Create.class)
     @Size(min = 3, max = 50, message = "Rol adı 3-50 simvol aralığında olmalıdır")
     @Pattern(regexp = "^ROLE_[A-Z_]+$", message = "Rol adı 'ROLE_' ilə başlamalı və böyük hərflərlə olmalıdır")
-    private String name; // Məsələn: ROLE_USER, ROLE_ADMIN
+    private String name;
 
     @Size(max = 255, message = "Açıqlama 255 simvoldan çox ola bilməz")
     private String description;

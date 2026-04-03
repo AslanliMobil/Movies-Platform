@@ -1,4 +1,6 @@
-# Redis olmadan işləmək üçün avto-konfiqurasiya söndürülür (startup ilişmir)
+server:
+  port: 8082
+
 spring:
   autoconfigure:
     exclude:
@@ -13,6 +15,7 @@ spring:
       ddl-auto: validate
     show-sql: true
   liquibase:
+    change-log: classpath:liquibase/changelog-master.yml
     enabled: true
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
@@ -25,5 +28,3 @@ spring:
           auth: true
           starttls:
             enable: true
-server:
-  port: 8082

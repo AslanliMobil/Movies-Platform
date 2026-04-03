@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class MinioConfig {
 
-    // Əgər YAML-dan oxuya bilməsə, qoşa nöqtədən sonrakı dəyəri götürəcək
     @Value("${spring.minio.url:http://localhost:9000}")
     private String url;
 

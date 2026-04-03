@@ -13,17 +13,18 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
                     nullable: false
+
               - column:
                   name: user_id
-                  type: BIGINT
+                  type: INT
                   constraints:
                     nullable: false
                     foreignKeyName: fk_watch_history_user
-                    referencedTableName: users
+                    referencedTableName: application_users
                     referencedColumnNames: id
               - column:
                   name: movie_id
-                  type: BIGINT
+                  type: INT
                   constraints:
                     nullable: false
                     foreignKeyName: fk_watch_history_movie

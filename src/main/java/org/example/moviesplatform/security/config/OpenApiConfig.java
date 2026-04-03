@@ -21,7 +21,7 @@ public class OpenApiConfig {
                         .title("Neo Cinema API")
                         .version("1.0")
                         .description("Bu sənədləşmə Neo Cinema layihəsinin bütün endpoint-lərini əhatə edir.")
-                        .contact(new Contact().name("Backend Team").email("dev@example.com")))
+                        .contact(new Contact().name("Backend Team").email("aslanli.mobil9@gmail.com")))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName, new SecurityScheme()

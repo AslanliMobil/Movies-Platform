@@ -14,19 +14,16 @@ public class DirectorSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            // 1. Ad üzrə filtr (case-insensitive)
             if (filter.getName() != null && !filter.getName().isBlank()) {
                 predicates.add(cb.like(cb.lower(root.get("name")),
                         "%" + filter.getName().toLowerCase() + "%"));
             }
 
-            // 2. Bioqrafiya üzrə filtr
             if (filter.getBiography() != null && !filter.getBiography().isBlank()) {
                 predicates.add(cb.like(cb.lower(root.get("biography")),
                         "%" + filter.getBiography().toLowerCase() + "%"));
             }
 
-            // 3. Doğum tarixi aralığı (birthDate)
             if (filter.getBirthDateFrom() != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("birthDate"), filter.getBirthDateFrom()));
             }
@@ -34,7 +31,6 @@ public class DirectorSpecification {
                 predicates.add(cb.lessThanOrEqualTo(root.get("birthDate"), filter.getBirthDateTo()));
             }
 
-            // 4. Ölüm tarixi aralığı (deathDate) - YENİ ƏLAVƏ EDİLDİ
             if (filter.getDeathDateFrom() != null) {
                 predicates.add(cb.greaterThanOrEqualTo(root.get("deathDate"), filter.getDeathDateFrom()));
             }
@@ -42,7 +38,6 @@ public class DirectorSpecification {
                 predicates.add(cb.lessThanOrEqualTo(root.get("deathDate"), filter.getDeathDateTo()));
             }
 
-            // Əgər filtr boşdursa, cb.and() boş array ilə 1=1 (bütün nəticələr) qaytarır
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }

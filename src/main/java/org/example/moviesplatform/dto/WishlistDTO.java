@@ -25,7 +25,6 @@ public class WishlistDTO {
     @Schema(example = "105")
     private Integer movieId;
 
-    // Response zamanı görünəcək detallar (ReadOnly)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Schema(description = "Filmin adı", example = "Inception")
     private String movieTitle;

@@ -17,7 +17,7 @@ public class WatchHistoryFilter {
 
     private Integer userId;
 
-    private Integer movieId; // Konkret filmin tarixçəsini yoxlamaq üçün
+    private Integer movieId;
 
     @Schema(description = "Film tam bitibmi (90%+ baxılıbmi)?")
     private Boolean isCompleted;

@@ -5,13 +5,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.WatchHistoryDTO;
 import org.example.moviesplatform.entity.Movie;
 import org.example.moviesplatform.entity.WatchHistory;
-import org.example.moviesplatform.security.repository.entity.UserEntity;
 import org.example.moviesplatform.error.model.MovieNotFoundException;
 import org.example.moviesplatform.error.model.WatchHistoryNotFoundException;
 import org.example.moviesplatform.mapper.WatchHistoryMapper;
+import org.example.moviesplatform.model.WatchHistoryFilter;
 import org.example.moviesplatform.repository.MovieRepository;
 import org.example.moviesplatform.security.repository.UserRepository;
 import org.example.moviesplatform.repository.WatchHistoryRepository;
+import org.example.moviesplatform.specification.WatchHistorySpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,13 @@ public class WatchHistoryService {
     private final MovieRepository movieRepository;
     private final UserRepository userRepository;
     private final WatchHistoryMapper watchHistoryMapper;
+
+    @Transactional(readOnly = true)
+    public Page<WatchHistoryDTO> search(WatchHistoryFilter filter, Pageable pageable) {
+        log.debug("Tarixçə dinamik filtrlərlə axtarılır: {}", filter);
+        return watchHistoryRepository.findAll(WatchHistorySpecification.getSpecification(filter), pageable)
+                .map(watchHistoryMapper::toDTO);
+    }
 
     @Transactional(readOnly = true)
     public Page<WatchHistoryDTO> getHistoryByUserId(Integer userId, Pageable pageable) {
@@ -58,12 +66,12 @@ public class WatchHistoryService {
                     WatchHistory newHistory = watchHistoryMapper.toEntity(dto);
                     newHistory.setUserEntity(userRepository.getReferenceById(dto.getUserId().longValue()));
                     newHistory.setMovie(movie);
-                    newHistory.setWatchCount(0);
+                    newHistory.setWatchCount(1);
                     return newHistory;
                 });
 
         watchHistoryMapper.updateEntityFromDto(dto, history);
-        history.setWatchCount(history.getWatchCount() + 1);
+
         history.calculateProgress(movie.getDuration());
 
         WatchHistory saved = watchHistoryRepository.save(history);

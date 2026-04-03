@@ -1,4 +1,5 @@
 package org.example.moviesplatform.security.model.enums;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

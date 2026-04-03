@@ -7,7 +7,6 @@ spring:
   profiles:
     active: local
 
-  # Redis olmadan startup ilişməsin deyə avto-konfiqurasiyanı söndürürük
   autoconfigure:
     exclude:
       - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
@@ -29,7 +28,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     open-in-view: false
     properties:
       hibernate:
@@ -40,12 +39,12 @@ spring:
     change-log: classpath:liquibase/changelog-master.yml
     enabled: true
 
-  # === MAIL KONFİQURASİYASI ===
+  # MAIL KONFİQURASİYASI
   mail:
     host: smtp.gmail.com
     port: 587
     username: aslanli.mobil9@gmail.com
-    password: "ozhpghbaugihbfxx" # Boşluqlar silindi və dırnağa alındı
+    password: "ozhpghbaugihbfxx"
     properties:
       mail:
         smtp:
@@ -58,13 +57,15 @@ spring:
     url: http://localhost:9000
     access-key: minioadmin
     secret-key: minioadmin
-    bucket-name: movie-videos
 
   # File Upload Configuration
   servlet:
     multipart:
       max-file-size: 500MB
       max-request-size: 500MB
+
+minio:
+  bucket-name: movie-videos
 
 # Custom Application Parametrlər
 application:

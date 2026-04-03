@@ -32,8 +32,17 @@ databaseChangeLog:
                   type: VARCHAR(255)
               - column:
                   name: average_rating
-                  type: DECIMAL(3,2)
+                  type: DECIMAL(4,2)
                   defaultValueNumeric: 0
+              - column:
+                  name: is_deleted
+                  type: BOOLEAN
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false
+              - column:
+                  name: director_id
+                  type: INT
               - column:
                   name: created_at
                   type: TIMESTAMP

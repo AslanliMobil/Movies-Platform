@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.moviesplatform.dto.ReviewDTO;
 import org.example.moviesplatform.entity.Movie;
 import org.example.moviesplatform.entity.Review;
-// 1. DÜZƏLİŞ: Köhnə User yerinə yeni UserEntity import edilməlidir
 import org.example.moviesplatform.security.repository.entity.UserEntity;
 import org.example.moviesplatform.error.model.MovieNotFoundException;
 import org.example.moviesplatform.error.model.ResourceAlreadyExistsException;
@@ -16,6 +15,7 @@ import org.example.moviesplatform.repository.ReviewRepository;
 import org.example.moviesplatform.repository.MovieRepository;
 import org.example.moviesplatform.security.repository.UserRepository;
 import org.example.moviesplatform.model.ReviewFilter;
+import org.example.moviesplatform.specification.ReviewSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,7 +35,7 @@ public class ReviewService {
 
     @Transactional(readOnly = true)
     public Page<ReviewDTO> searchReviews(ReviewFilter filter, Pageable pageable) {
-        return reviewRepository.findByMovieId(filter.getMovieId(), pageable)
+        return reviewRepository.findAll(ReviewSpecification.getSpecification(filter), pageable)
                 .map(reviewMapper::toDTO);
     }
 
@@ -50,11 +50,10 @@ public class ReviewService {
 
     @Transactional
     public ReviewDTO addReview(ReviewDTO dto) {
-        if (reviewRepository.existsByUserIdAndMovieId(dto.getUserId(), dto.getMovieId())) {
+        if (reviewRepository.existsByUserIdAndMovieId(dto.getUserId().longValue(), dto.getMovieId())) {
             throw new ResourceAlreadyExistsException("Siz artıq bu filmə rəy yazmısınız.");
         }
 
-        // 2. DÜZƏLİŞ: UserEntity istifadəsi və Long ID çevrilməsi (əgər dto.getUserId() Integer-dirsə)
         UserEntity user = userRepository.findById(dto.getUserId().longValue())
                 .orElseThrow(() -> new UserNotFoundException("İstifadəçi tapılmadı: " + dto.getUserId()));
 
@@ -62,11 +61,10 @@ public class ReviewService {
                 .orElseThrow(() -> new MovieNotFoundException("Film tapılmadı: " + dto.getMovieId()));
 
         Review review = reviewMapper.toEntity(dto);
-        review.setUser(user); // Entity-dəki setter adını yoxla (setUser yoxsa setUserEntity)
+        review.setUser(user);
         review.setMovie(movie);
-        review.setCreatedAt(LocalDateTime.now());
 
-        Review saved = reviewRepository.save(review);
+        Review saved = reviewRepository.saveAndFlush(review);
         updateMovieAverageRating(movie.getId());
 
         log.info("İstifadəçi '{}' '{}' filminə {} xal verdi.", user.getUsername(), movie.getTitle(), dto.getRating());
@@ -78,15 +76,14 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new ReviewNotFoundException("Rəy tapılmadı: " + id));
 
-        // 3. DÜZƏLİŞ: ID müqayisəsi (Long vs Integer)
-        if (!review.getUser().getId().equals(dto.getUserId().longValue())) {
+        if (review.getUser().getId().intValue() != dto.getUserId().intValue()) {
             throw new RuntimeException("Siz başqasının rəyini dəyişə bilməzsiniz!");
         }
 
         review.setComment(dto.getComment());
         review.setRating(dto.getRating());
 
-        Review updated = reviewRepository.save(review);
+        Review updated = reviewRepository.saveAndFlush(review);
         updateMovieAverageRating(review.getMovie().getId());
 
         return reviewMapper.toDTO(updated);
@@ -99,6 +96,9 @@ public class ReviewService {
 
         Integer movieId = review.getMovie().getId();
         reviewRepository.delete(review);
+
+        reviewRepository.flush();
+
         updateMovieAverageRating(movieId);
 
         log.info("ID {} olan rəy silindi.", id);

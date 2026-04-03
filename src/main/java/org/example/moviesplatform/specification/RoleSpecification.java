@@ -25,18 +25,16 @@ public class RoleSpecification implements Specification<Role> {
 
         if (filter == null) return cb.conjunction();
 
-        // 1. Rol adına görə axtarış + Explicit String Cast
         if (filter.getName() != null && !filter.getName().isBlank()) {
             predicates.add(cb.like(
-                    cb.lower(root.get("name").as(String.class)), // <-- .as(String.class) mütləqdir
+                    cb.lower(root.get("name").as(String.class)),
                     "%" + filter.getName().toLowerCase() + "%"
             ));
         }
 
-        // 2. Açıqlamaya görə axtarış + Explicit String Cast
         if (filter.getDescription() != null && !filter.getDescription().isBlank()) {
             predicates.add(cb.like(
-                    cb.lower(root.get("description").as(String.class)), // .as(String.class) mütləqdir!
+                    cb.lower(root.get("description").as(String.class)),
                     "%" + filter.getDescription().toLowerCase() + "%"
             ));
         }

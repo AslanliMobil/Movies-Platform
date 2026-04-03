@@ -16,22 +16,19 @@ public class MovieFilter {
 
     private String title;
 
-    // Buraxılış tarixi aralığı (Məsələn: 2020-01-01 və 2024-12-31 arası)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate releaseDateFrom;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate releaseDateTo;
 
-    // Reytinq aralığı (Məsələn: 7.0 - 9.5 arası)
     private Double ratingFrom;
     private Double ratingTo;
 
-    // Müddət aralığı (Məsələn: 90 - 150 dəq arası)
     private Integer durationFrom;
     private Integer durationTo;
 
     private Integer genreId;
     private Integer directorId;
-    private Integer actorId; // Konkret aktyorun filmlərini tapmaq olsun
+    private Integer actorId;
 }

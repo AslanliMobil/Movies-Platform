@@ -61,7 +61,6 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         try {
-            // 1. Username və Password yoxlanılır
             Authentication authenticate = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
                             request.getUsername(),
@@ -69,9 +68,7 @@ public class AuthController {
                     )
             );
 
-            // 2. Əgər bura çatdıqsa, giriş uğurludur. Token yaradırıq.
-            // Qeyd: Əgər JwtService klassın varsa, onu bura çağır.
-            // Yoxdursa, userService daxilində token yaradan metod yazıb onu çağır.
+
             String token = userService.generateToken(authenticate);
 
             return ResponseEntity.ok(Map.of("token", "Bearer " + token));
