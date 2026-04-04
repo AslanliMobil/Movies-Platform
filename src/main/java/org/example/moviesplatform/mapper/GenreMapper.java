@@ -20,10 +20,7 @@ public interface GenreMapper {
 
     List<GenreDTO> toDTOList(List<Genre> genres);
 
-    /**
-     * Mövcud janrı yeniləmək üçün.
-     * Əgər DTO-da ad null-dursa, köhnə adı silmir.
-     */
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     void updateGenreFromDto(GenreDTO dto, @MappingTarget Genre genre);

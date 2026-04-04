@@ -23,17 +23,13 @@ public class ActorService {
     private final ActorRepository actorRepository;
     private final ActorMapper actorMapper;
 
-    /**
-     * 1. BÜTÜN AKTYORLARI GƏTİRMƏK
-     */
+
     public List<ActorDTO> getAllActors() {
         log.info("Fetching all actors");
         return actorMapper.toDTOList(actorRepository.findAll());
     }
 
-    /**
-     * 2. ID-YƏ GÖRƏ AKTYOR TAPMAQ
-     */
+
     public ActorDTO getActorById(Integer id) {
         log.info("Fetching actor with id: {}", id);
         return actorRepository.findById(id)
@@ -41,12 +37,7 @@ public class ActorService {
                 .orElseThrow(() -> new ActorNotFoundException("Actor not found with id: " + id));
     }
 
-    /**
-     * 3. YENİ AKTYOR YARATMAQ
-     * Biznes Qaydaları:
-     * - Eyni adda aktyor təkrar qeydiyyatdan keçə bilməz.
-     * - Ölüm tarixi doğum tarixindən daha köhnə ola bilməz.
-     */
+
     @Transactional
     public ActorDTO createActor(ActorDTO dto) {
         log.info("Creating new actor: {}", dto.getName());
@@ -61,10 +52,7 @@ public class ActorService {
         return actorMapper.toDTO(actorRepository.save(actor));
     }
 
-    /**
-     * 4. TAM YENİLƏMƏ (PUT)
-     * Məqsəd: Aktyorun bütün məlumatlarını (ad, bioqrafiya və s.) yenidən yazmaq.
-     */
+
     @Transactional
     public ActorDTO updateActor(Integer id, ActorDTO dto) {
         log.info("Updating actor with id: {}", id);
@@ -81,10 +69,6 @@ public class ActorService {
         return actorMapper.toDTO(actorRepository.save(actor));
     }
 
-    /**
-     * 5. QİSMİ YENİLƏMƏ (PATCH)
-     * Məqsəd: Aktyorun yalnız bir və ya bir neçə sahəsini (məsələn, yalnız bioqrafiyasını) dəyişmək.
-     */
     @Transactional
     public ActorDTO patchActor(Integer id, ActorDTO dto) {
         log.info("Patching actor with id: {}", id);
@@ -118,10 +102,7 @@ public class ActorService {
         return actorMapper.toDTO(actorRepository.save(actor));
     }
 
-    /**
-     * 6. AKTYORU SİLMƏK
-     * Məqsəd: Aktyorun bazadakı qeydini tamamilə yox etmək.
-     */
+
     @Transactional
     public void deleteActor(Integer id) {
         log.info("Deleting actor with id: {}", id);
@@ -131,21 +112,14 @@ public class ActorService {
         actorRepository.deleteById(id);
     }
 
-    /**
-     * 7. DİNAMİK AXtARIŞ (Search)
-     * Məqsəd: Verilən filtr şərtlərinə (ad, doğum ili və s.) uyğun aktyorları tapmaq.
-     */
+
     public List<ActorDTO> search(ActorFilter filter) {
         log.info("Searching actors with criteria: {}", filter);
         List<Actor> actors = actorRepository.findAll(ActorSpecification.getSpecification(filter));
         return actorMapper.toDTOList(actors);
     }
 
-    /**
-     * KÖMƏKÇİ METOD: TARİX YOXLANILMASI
-     * Bu metod ölüm tarixinin doğumdan əvvəl olmamasını təmin edir.
-     * Məsələn: 1990-da doğulub 1980-də ölmək mümkün deyil.
-     */
+
     private void validateDates(java.time.LocalDate birth, java.time.LocalDate death) {
         if (birth != null && death != null && death.isBefore(birth)) {
             throw new IllegalArgumentException("Ölüm tarixi doğum tarixindən əvvəl ola bilməz!");

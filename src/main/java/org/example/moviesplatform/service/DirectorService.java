@@ -23,17 +23,13 @@ public class DirectorService {
     private final DirectorRepository directorRepository;
     private final DirectorMapper directorMapper;
 
-    /**
-     * 1. BÜTÜN REJİSSORLARI GƏTİRMƏK
-     */
+
     public List<DirectorDTO> getAllDirectors() {
         log.info("Fetching all directors");
         return directorMapper.toDTOList(directorRepository.findAll());
     }
 
-    /**
-     * 2. ID-YƏ GÖRƏ AXtARIŞ
-     */
+
     public DirectorDTO getDirectorById(Integer id) {
         log.info("Fetching director with id: {}", id);
         return directorRepository.findById(id)
@@ -41,9 +37,7 @@ public class DirectorService {
                 .orElseThrow(() -> new DirectorNotFoundException("Director not found with id: " + id));
     }
 
-    /**
-     * 3. YENİ REJİSSOR YARATMAQ (Biznes Yoxlamaları ilə)
-     */
+
     @Transactional
     public DirectorDTO createDirector(DirectorDTO dto) {
         if (directorRepository.existsByNameIgnoreCase(dto.getName())) {
@@ -61,9 +55,7 @@ public class DirectorService {
         return directorMapper.toDTO(saved);
     }
 
-    /**
-     * 4. TAM YENİLƏMƏ (PUT)
-     */
+
     @Transactional
     public DirectorDTO updateDirector(Integer id, DirectorDTO dto) {
         log.info("Updating director with id: {}", id);
@@ -90,9 +82,6 @@ public class DirectorService {
         return directorMapper.toDTO(updated);
     }
 
-    /**
-     * 5. QİSMİ YENİLƏMƏ (PATCH)
-     */
     @Transactional
     public DirectorDTO patchDirector(Integer id, DirectorDTO dto) {
         log.info("Patching director with id: {}", id);
@@ -128,9 +117,7 @@ public class DirectorService {
         return directorMapper.toDTO(directorRepository.save(director));
     }
 
-    /**
-     * 6. REJİSSORU SİLMƏK
-     */
+
     @Transactional
     public void deleteDirector(Integer id) {
         log.info("Deleting director with id: {}", id);
@@ -140,9 +127,7 @@ public class DirectorService {
         directorRepository.deleteById(id);
     }
 
-    /**
-     * 7. DİNAMİK AXtARIŞ (Search)
-     */
+
     public List<DirectorDTO> search(DirectorFilter filter) {
         log.info("Searching directors with criteria: {}", filter);
         List<Director> directors = directorRepository.findAll(DirectorSpecification.getSpecification(filter));

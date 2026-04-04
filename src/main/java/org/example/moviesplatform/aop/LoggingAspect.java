@@ -34,7 +34,7 @@ public class LoggingAspect {
     public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         try {
-            Object result = joinPoint.proceed(); // Metodu icra et
+            Object result = joinPoint.proceed();
             long executionTime = System.currentTimeMillis() - start;
             log.info("⏱️ AOP PERFORMANCE: {}() icra müddəti: {} ms",
                     joinPoint.getSignature().getName(), executionTime);
