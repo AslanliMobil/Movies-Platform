@@ -103,9 +103,7 @@ public class MovieService {
                 .map(movieMapper::toDTO);
     }
 
-    /**
-     * Video emalı prosesini.
-     */
+
     public void processMovieVideo(Integer movieId, MultipartFile videoFile) throws IOException {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new MovieNotFoundException("Film tapılmadı! ID: " + movieId));
@@ -120,10 +118,7 @@ public class MovieService {
         hlsTranscoderService.convertToHls(movieId.toString(), tempFile.toString());
     }
 
-    /**
-     * Transcoding bitdikdən sonra HlsTranscoderService tərəfindən çağırılır.
-     * URL-in düzgünlüyünü (movies/ qovluğu) yoxlayır və bazanı yeniləyir.
-     */
+
     @Transactional
     @CacheEvict(value = "movies", key = "#movieId")
     public void updateMovieVideoUrl(Integer movieId, String videoUrl) {

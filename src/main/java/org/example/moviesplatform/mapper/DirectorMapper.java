@@ -17,10 +17,7 @@ public interface DirectorMapper {
 
     List<DirectorDTO> toDTOList(List<Director> directors);
 
-    /**
-     * Mövcud rejissoru yeniləmək üçün (PUT/PATCH).
-     * Rejissorun id-si və filmləri bu mapper vasitəsilə dəyişdirilməməlidir.
-     */
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "movies", ignore = true)

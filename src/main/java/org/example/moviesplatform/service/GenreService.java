@@ -23,17 +23,13 @@ public class GenreService {
     private final GenreRepository genreRepository;
     private final GenreMapper genreMapper;
 
-    /**
-     * 1. BÜTÜN JANRLARI GƏTİRMƏK
-     */
+
     public List<GenreDTO> getAll() {
         log.info("Bütün janrlar gətirilir");
         return genreMapper.toDTOList(genreRepository.findAll());
     }
 
-    /**
-     * 2. ID-YƏ GÖRƏ JANR TAPMAQ
-     */
+
     public GenreDTO getById(Integer id) {
         log.info("ID-si {} olan janr axtarılır", id);
         return genreRepository.findById(id)
@@ -41,9 +37,7 @@ public class GenreService {
                 .orElseThrow(() -> new GenreNotFoundException("Bu ID-li janr tapılmadı: " + id));
     }
 
-    /**
-     * 3. YENİ JANR YARATMAQ
-     */
+
     @Transactional
     public GenreDTO create(GenreDTO dto) {
         String cleanName = dto.getName().trim();
@@ -59,9 +53,7 @@ public class GenreService {
         return genreMapper.toDTO(saved);
     }
 
-    /**
-     * 4. JANRI YENİLƏMƏK (UPDATE)
-     */
+
     @Transactional
     public GenreDTO update(Integer id, GenreDTO dto) {
         log.info("ID-si {} olan janr yenilənir", id);
@@ -79,9 +71,7 @@ public class GenreService {
         return genreMapper.toDTO(genreRepository.save(genre));
     }
 
-    /**
-     * 5. JANRI SİLMƏK
-     */
+
     @Transactional
     public void delete(Integer id) {
         if (!genreRepository.existsById(id)) {
@@ -91,9 +81,7 @@ public class GenreService {
         log.info("Janr silindi. ID: {}", id); // ID-ni mesajda deyil, logda saxlayırıq
     }
 
-    /**
-     * 6. DİNAMİK AXTARIŞ (SEARCH)
-     */
+
     public List<GenreDTO> search(GenreFilter filter) {
         log.info("Janrlar üzrə filtrli axtarış: {}", filter);
         List<Genre> genres = genreRepository.findAll(GenreSpecification.getSpecification(filter));

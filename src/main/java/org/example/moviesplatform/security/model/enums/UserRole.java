@@ -26,10 +26,7 @@ public enum UserRole {
 
     private final Set<UserPermission> permissions;
 
-    /**
-     * Bu metod həm "movies:read" tipli icazələri,
-     * həm də "ROLE_ADMIN" tipli rolları tək bir listə toplayır.
-     */
+
     public Set<SimpleGrantedAuthority> getGrantedAuthorities() {
         Set<SimpleGrantedAuthority> authorities = getPermissions().stream()
                 .map(p -> new SimpleGrantedAuthority(p.getPermission()))

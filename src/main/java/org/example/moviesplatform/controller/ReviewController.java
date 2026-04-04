@@ -17,9 +17,7 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    /**
-     * Müəyyən bir filmə yazılan rəylər (Səhifələmə ilə).
-     */
+
     @GetMapping("/movie/{movieId}")
     public ResponseEntity<Page<ReviewDTO>> getByMovie(
             @PathVariable Integer movieId,
@@ -32,17 +30,13 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.searchReviews(filter, pageable));
     }
 
-    /**
-     * Yeni rəy əlavə edir.
-     */
+
     @PostMapping
     public ResponseEntity<ReviewDTO> addReview(@Valid @RequestBody ReviewDTO dto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(reviewService.addReview(dto));
     }
 
-    /**
-     * Mövcud rəyi yeniləyir (Redaktə).
-     */
+
     @PutMapping("/{id}")
     public ResponseEntity<ReviewDTO> updateReview(
             @PathVariable Integer id,
@@ -50,9 +44,7 @@ public class ReviewController {
         return ResponseEntity.ok(reviewService.updateReview(id, dto));
     }
 
-    /**
-     * Rəyi silir.
-     */
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReview(@PathVariable Integer id) {
         reviewService.delete(id);
