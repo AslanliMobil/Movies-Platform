@@ -1,5 +1,4 @@
-package org.example.moviesplatform.aop; // Sənin paket adın bura uyğun olmalıdır
-
+package org.example.moviesplatform.aop;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
